@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">EADLab</string>
+    <string name="string_hello">Hello</string>
+    <string name="firstName">First Name</string>
+    <string name="lastName">Last Name</string>
+    <string name="email">Email Address</string>
+    <string name="register">Register</string>
+    <string name="getAll">Get All Employees</string>
+    <string name="home_icon">Home Icon</string>
+    <string name="app_title">Fuel Assist - Sri Lanka</string>
+    <string name="quote">\"Get your vehicle fueled without standing on queues\"</string>
+    <string name="page_heading">Home Page</string>
+    <string name="view_title">Vehicle Details</string>
+    <string name="view_label1">1. Vehicle Number</string>
+    <string name="view_labe12">Vehicle Type</string>
+    <string name="view_label2">2. Vehicle Type</string>
+    <string name="view_label3">3. Fuel Type</string>
+    <string name="test_value">XXXX</string>
+    <string name="sub_heading">Select Fuel Station</string>
+    <string name="select_locat">Select Location</string>
+    <string name="select_fuelstation">Select Fuel Station</string>
+    <string name="input_date">Select Date</string>
+    <string name="btn_homepage">Check Fuel</string>
+    <string-array name="location_array">
+        <item>Select a location</item>
+        <item>Location 1</item>
+        <item>Location 2</item>
+        <item>Location 3</item>
+    </string-array>
+    <string-array name="fuelStation_array">
+        <item>Select a Fuel Station</item>
+        <item>Fuel Station 1</item>
+        <item>Fuel Station 2</item>
+        <item>Fuel Station 3</item>
+    </string-array>
+</resources>
