@@ -21,6 +21,22 @@
     <string name="select_fuelstation">Select Fuel Station</string>
     <string name="input_date">Select Date</string>
     <string name="btn_homepage">Check Fuel</string>
+    <string name="page_heading_2">View Fuel Details Page</string>
+    <string name="view_heading">Fuel Details</string>
+    <string name="view_fuellabel_1">1. Fuel Station Location</string>
+    <string name="view_fuellabel_2">2. Fuel Station Name</string>
+    <string name="fuel_detail1">Arrived Time</string>
+    <string name="fuel_detail2">Arrived Litres</string>
+    <string name="fuel_detail3">Remaining Litres</string>
+    <string name="current_veh_count">Current Vehicle Count in Queue</string>
+    <string name="button_label_fuel">Enter Queue</string>
+    <string name="page_heading3">Queue Details</string>
+    <string name="vehicle_count_label">Your Vehicle Count in Queue</string>
+    <string name="remain_fuel">Remianing Fuel Volumne</string>
+    <string name="label_waittime">Waiting Time</string>
+    <string name="label_time">00:00:00 A.M</string>
+    <string name="btn_label_exit">Exit Queue</string>
+    <string name="btn_fueled">Fueled Vehicle</string>
     <string-array name="location_array">
         <item>Select a location</item>
         <item>Location 1</item>
@@ -32,5 +48,12 @@
         <item>Fuel Station 1</item>
         <item>Fuel Station 2</item>
         <item>Fuel Station 3</item>
+    </string-array>
+    <string-array name="fuelType_array">
+        <item>Select a Fuel Type</item>
+        <item>Petrol - 92 (Normal)</item>
+        <item>Petrol - 95 (Super)</item>
+        <item>Diesel - 92 (Normal)</item>
+        <item>Diesel - 95 (Super)</item>
     </string-array>
 </resources>

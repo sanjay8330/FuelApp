@@ -79,8 +79,8 @@
 
     <View
         android:id="@+id/view_vehdetailsIn"
-        android:layout_width="359dp"
-        android:layout_height="119dp"
+        android:layout_width="370dp"
+        android:layout_height="118dp"
         android:layout_marginTop="13dp"
         android:background="@color/white"
         android:backgroundTintMode="add"

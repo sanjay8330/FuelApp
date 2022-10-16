@@ -7,21 +7,21 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class CustomerHomepage extends AppCompatActivity {
+public class ViewFuelDetails extends AppCompatActivity {
 
-    private Button btnCheckFuel;
+    private Button btnEnterQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer_homepage);
+        setContentView(R.layout.activity_view_fuel_details);
 
-        btnCheckFuel = findViewById(R.id.btn_checkfuel);
+        btnEnterQueue = findViewById(R.id.btn_enterQueue);
 
-        btnCheckFuel.setOnClickListener(new View.OnClickListener() {
+        btnEnterQueue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
+                Intent intent = new Intent(ViewFuelDetails.this, QueueDetails.class);
                 startActivity(intent);
             }
         });

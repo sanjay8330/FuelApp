@@ -10,6 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EADLab">
         <activity
+            android:name=".QueueDetails"
+            android:exported="true" />
+        <activity
+            android:name=".ViewFuelDetails"
+            android:exported="true" />
+        <activity
             android:name=".CustomerHomepage"
             android:exported="true" />
         <activity
