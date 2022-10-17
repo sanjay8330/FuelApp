@@ -57,6 +57,12 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
 
         spinnerLocation.setOnItemSelectedListener(this);
 
+        if(spinnerLocation.isSelected()){
+            spinnerShedName.setVisibility(View.VISIBLE);
+            edtTxtDate.setVisibility(View.VISIBLE);
+            btnCheckFuel.setVisibility(View.VISIBLE);
+        }
+
         //Button click
         btnCheckFuel.setOnClickListener(new View.OnClickListener() {
             @Override
