@@ -68,20 +68,20 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         switch (view.getId()){
             case R.id.btn_checkfuel:
                 if(!selectedLocation.isEmpty() && !selectedShed.isEmpty() && !edtTxtDate.getText().toString().isEmpty()){
-//                    Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
-//                    startActivity(intent);
-                    String url = "http://10.0.2.2:3001/convertToJson/getTableStructure";
-                    new AsyncHttpClient().get(url, new AsyncHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                            txtVehNumber.setText("Data received");
-                        }
-
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                            txtVehNumber.setText("Error"+statusCode);
-                        }
-                    });
+                    Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
+                    startActivity(intent);
+//                    String url = "http://10.0.2.2:3001/convertToJson/getTableStructure";
+//                    new AsyncHttpClient().get(url, new AsyncHttpResponseHandler() {
+//                        @Override
+//                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+//                            txtVehNumber.setText("Data received");
+//                        }
+//
+//                        @Override
+//                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+//                            txtVehNumber.setText("Error"+statusCode);
+//                        }
+//                    });
                 }else{
                     Toast.makeText(this, "Please fill the required fields to continue!"+selectedShed, Toast.LENGTH_LONG).show();
                 }
