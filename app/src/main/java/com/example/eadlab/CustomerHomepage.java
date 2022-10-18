@@ -12,15 +12,22 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.example.eadlab.RetroFit.IMyService;
+import com.example.eadlab.RetroFit.RetroFitClient;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import cz.msebera.android.httpclient.Header;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
+import io.reactivex.disposables.Disposables;
 
 public class CustomerHomepage extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
 
@@ -30,6 +37,9 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
     private Button btnCheckFuel;
 
     private String selectedLocation, selectedShed;
+    //test
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    IMyService iMyService;
 
 
     @Override
@@ -68,9 +78,10 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         switch (view.getId()){
             case R.id.btn_checkfuel:
                 if(!selectedLocation.isEmpty() && !selectedShed.isEmpty() && !edtTxtDate.getText().toString().isEmpty()){
-                    Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
-                    startActivity(intent);
-//                    String url = "http://10.0.2.2:3001/convertToJson/getTableStructure";
+                    this.testmethod();
+//                    Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
+//                    startActivity(intent);
+//                    String url = "https://10.0.2.2:7135/api/Customer";
 //                    new AsyncHttpClient().get(url, new AsyncHttpResponseHandler() {
 //                        @Override
 //                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -121,6 +132,9 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
 
         //Button click
         btnCheckFuel.setOnClickListener(this);
+        //test
+        Retrofit retrofitClient = RetroFitClient.getInstance();
+        iMyService  = retrofitClient.create(IMyService.class);
     }
 
     public void showUIElements(){
@@ -145,4 +159,22 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         return formattedDate;
     }
 
+    //test
+    public void testmethod(){
+        compositeDisposable.add(iMyService.addshed("cde", "testlocation")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Toast.makeText(CustomerHomepage.this, "Data Added"+s , Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    @Override
+    protected void onStop() {
+        compositeDisposable.clear();
+        super.onStop();
+    }
 }
