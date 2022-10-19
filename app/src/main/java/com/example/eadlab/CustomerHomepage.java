@@ -171,14 +171,15 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
             public void onResponse(Call<List<ShedModel>> call, Response<List<ShedModel>> response) {
                 Toast.makeText(CustomerHomepage.this, "Data Retrieved Successfully!", Toast.LENGTH_LONG).show();
                 Log.d(TAG, "Data obtained : "+response);
-                call.cancel();
+//                call.cancel();
             }
 
             @Override
             public void onFailure(Call<List<ShedModel>> call, Throwable t) {
                 Toast.makeText(CustomerHomepage.this, "Error Occurred!", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "Error : ");
-                call.cancel();
+                Log.e(TAG, "Error : "+call);
+                t.printStackTrace();
+//                call.cancel();
             }
         });
     }
