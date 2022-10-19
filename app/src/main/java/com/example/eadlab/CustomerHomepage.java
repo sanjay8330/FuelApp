@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -12,12 +13,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.eadlab.Model.ShedModel;
 import com.example.eadlab.RetroFit.IMyService;
 import com.example.eadlab.RetroFit.RetroFitClient;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -26,6 +29,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import io.reactivex.disposables.Disposables;
 
@@ -78,21 +84,9 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         switch (view.getId()){
             case R.id.btn_checkfuel:
                 if(!selectedLocation.isEmpty() && !selectedShed.isEmpty() && !edtTxtDate.getText().toString().isEmpty()){
-                    this.testmethod();
+                    this.getAllSheds();
 //                    Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
 //                    startActivity(intent);
-//                    String url = "https://10.0.2.2:7135/api/Customer";
-//                    new AsyncHttpClient().get(url, new AsyncHttpResponseHandler() {
-//                        @Override
-//                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-//                            txtVehNumber.setText("Data received");
-//                        }
-//
-//                        @Override
-//                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-//                            txtVehNumber.setText("Error"+statusCode);
-//                        }
-//                    });
                 }else{
                     Toast.makeText(this, "Please fill the required fields to continue!"+selectedShed, Toast.LENGTH_LONG).show();
                 }
@@ -160,16 +154,33 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
     }
 
     //test
-    public void testmethod(){
-        compositeDisposable.add(iMyService.addshed("cde", "testlocation")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) throws Exception {
-                        Toast.makeText(CustomerHomepage.this, "Data Added"+s , Toast.LENGTH_SHORT).show();
-                    }
-                }));
+    private static final String TAG = "CustomerHomePage";
+    public void getAllSheds(){
+//        compositeDisposable.add(iMyService.addshed("cde", "testlocation")
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Consumer<String>() {
+//                    @Override
+//                    public void accept(String s) throws Exception {
+//                        Toast.makeText(CustomerHomepage.this, "Data Added"+s , Toast.LENGTH_SHORT).show();
+//                    }
+//                }));
+        Call<List<ShedModel>> listOfSheds = iMyService.getAllSheds();
+        listOfSheds.enqueue(new Callback<List<ShedModel>>() {
+            @Override
+            public void onResponse(Call<List<ShedModel>> call, Response<List<ShedModel>> response) {
+                Toast.makeText(CustomerHomepage.this, "Data Retrieved Successfully!", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Data obtained : "+response);
+                call.cancel();
+            }
+
+            @Override
+            public void onFailure(Call<List<ShedModel>> call, Throwable t) {
+                Toast.makeText(CustomerHomepage.this, "Error Occurred!", Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Error : ");
+                call.cancel();
+            }
+        });
     }
 
     @Override
