@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/label_reg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_reg"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="161dp"
+            tools:layout_editor_absoluteY="126dp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/cusRegBtn"
+            android:layout_width="244dp"
+            android:layout_height="51dp"
+            android:background="#E91E63"
+            android:text="@string/string_cusReg"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="83dp"
+            tools:layout_editor_absoluteY="271dp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/shedRegBtn"
+            android:layout_width="239dp"
+            android:layout_height="44dp"
+            android:background="@color/white"
+            android:text="@string/string_shedReg"
+            android:textColor="#E91E63"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="83dp"
+            tools:layout_editor_absoluteY="378dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".QueueDetails"
+        tools:layout_editor_absoluteX="41dp"/>
+
+    <TextView
+        android:id="@+id/txt_subtitle5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/quote"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.081" />
+
+    <TextView
+        android:id="@+id/txt_apptitle5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_title"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.036" />
+
+    <ImageButton
+        android:id="@+id/imgbtn_home7"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:backgroundTint="#FFFFFF"
+        android:contentDescription="@string/home_icon"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.022"
+        app:srcCompat="@drawable/homeicon" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
