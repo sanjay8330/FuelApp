@@ -7,17 +7,31 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.eadlab.Endpoints.EndpointURL;
 import com.example.eadlab.Model.ShedModel;
+import com.example.eadlab.Model.UserModel;
 import com.example.eadlab.RetroFit.IMyService;
 import com.example.eadlab.RetroFit.RetroFitClient;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +45,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import io.reactivex.disposables.Disposables;
 
@@ -47,6 +60,11 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     IMyService iMyService;
 
+    String api = "http://192.168.1.30:7135/api/Customer";
+    String userDetailAPI = EndpointURL.GET_CUSTOMER_BY_ID;
+    String shedDetailAPI = EndpointURL.GET_ALL_SHEDS;
+    ArrayList<ShedModel> shedModelList;
+    List<String> locations;
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -84,7 +102,7 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         switch (view.getId()){
             case R.id.btn_checkfuel:
                 if(!selectedLocation.isEmpty() && !selectedShed.isEmpty() && !edtTxtDate.getText().toString().isEmpty()){
-                    this.getAllSheds();
+                    getAllData();
 //                    Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
 //                    startActivity(intent);
                 }else{
@@ -116,7 +134,13 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
 
         edtTxtDate.setText(this.getCurrentDate());
 
+        shedModelList = new ArrayList<>();
+        locations = new ArrayList<>();
+        locations.add("Select a location");
+
         //Get the vehicle details based on logged in user id
+        getLoggedInUserDetails();
+        getAllSheds();
 
         //Hide the shed name spinner, date field and button
         this.hideUIElements();
@@ -155,33 +179,107 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
 
     //test
     private static final String TAG = "CustomerHomePage";
-    public void getAllSheds(){
-//        compositeDisposable.add(iMyService.addshed("cde", "testlocation")
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Consumer<String>() {
-//                    @Override
-//                    public void accept(String s) throws Exception {
-//                        Toast.makeText(CustomerHomepage.this, "Data Added"+s , Toast.LENGTH_SHORT).show();
-//                    }
-//                }));
-        Call<List<ShedModel>> listOfSheds = iMyService.getAllSheds();
-        listOfSheds.enqueue(new Callback<List<ShedModel>>() {
-            @Override
-            public void onResponse(Call<List<ShedModel>> call, Response<List<ShedModel>> response) {
-                Toast.makeText(CustomerHomepage.this, "Data Retrieved Successfully!", Toast.LENGTH_LONG).show();
-                Log.d(TAG, "Data obtained : "+response);
-//                call.cancel();
-            }
 
+    public void getLoggedInUserDetails(){
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, userDetailAPI,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e(TAG, "onResponse: "+response);
+                        try {
+                            //JSONArray jsonArray = new JSONArray(response);
+                            JSONObject jsonObject = new JSONObject(response);
+                            UserModel userModel = new UserModel(
+                                    jsonObject.getString("id"),
+                                    jsonObject.getString("name"),
+                                    jsonObject.getString("vehicleType"),
+                                    jsonObject.getString("vehicleNumber"),
+                                    jsonObject.getString("fuelType")
+                            );
+
+                            txtVehNumber.setText(userModel.getVehicleNumber());
+                            txtVehType.setText(userModel.getVehicleType());
+                            txtFuelType.setText(userModel.getFuelType());
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
             @Override
-            public void onFailure(Call<List<ShedModel>> call, Throwable t) {
-                Toast.makeText(CustomerHomepage.this, "Error Occurred!", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "Error : "+call);
-                t.printStackTrace();
-//                call.cancel();
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "onErrorResponse: "+error.getLocalizedMessage());
             }
         });
+
+        queue.add(stringRequest);
+    }
+
+    public void getAllSheds(){
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, shedDetailAPI,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e(TAG, "onResponse: "+response);
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for(int i = 0; i < jsonArray.length(); i++){
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                ShedModel shedModel = new ShedModel(
+                                        jsonObject.getString("id"),
+                                        jsonObject.getString("shedName"),
+                                        jsonObject.getString("location")
+                                );
+
+                                shedModelList.add(shedModel);
+                                locations.add(shedModel.getLocation());
+                            }
+
+
+                            String[] shedLocations = locations.toArray(new String[0]);
+                            ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                                    CustomerHomepage.this, android.R.layout.simple_spinner_item, shedLocations);
+                            spinnerLocation.setAdapter(spinnerArrayAdapter);
+                            //spinnerLocation
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "onErrorResponse: "+error.getLocalizedMessage());
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+
+    public void getAllData(){
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e(TAG, "onResponse: "+response.toString());
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "onErrorResponse: "+error.getLocalizedMessage());
+            }
+        });
+
+        queue.add(stringRequest);
+
     }
 
     @Override

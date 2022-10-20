@@ -13,6 +13,13 @@ public class ShedModel {
     @SerializedName("location")
     String location;
 
+    public ShedModel(String id, String shedName, String location) {
+        this.id = id;
+        this.shedName = shedName;
+        this.location = location;
+    }
+
+
     public String getId() {
         return id;
     }
