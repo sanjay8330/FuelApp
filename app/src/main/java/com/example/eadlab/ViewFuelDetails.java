@@ -22,6 +22,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.eadlab.Endpoints.EndpointURL;
+import com.example.eadlab.Model.FuelModel;
+import com.example.eadlab.Model.QueueModel;
 import com.example.eadlab.Model.ShedModel;
 import com.example.eadlab.Model.UserModel;
 import com.example.eadlab.Wrapper.SpinnerWrapper;
@@ -42,10 +44,12 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
     private TextView label_arrTime, label_arrLitres, label_remLitres, label_vehCount;
 
     SpinnerWrapper selectedFuelType;
+    String enteredQueueId;
 
     //Endpoints
     String getShedByIdAPI = EndpointURL.GET_SHED_BY_ID;
     String getFuelAPI = EndpointURL.GET_FUEL_BY_SHEDNAME_FUELTYPE;
+    String getQueueAPI = EndpointURL.GET_QUEUE_BY_SHEDNAME_FUELTYPE;
 
     //Endpoint Variables
     List<SpinnerWrapper> fuelTypes;
@@ -85,7 +89,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
         //Add standard values to fuel type spinner
         fuelTypes = new ArrayList<>();
-        fuelTypes.add(new SpinnerWrapper("01", "Select a location"));
+        fuelTypes.add(new SpinnerWrapper("01", "Select a Fuel Type"));
         fuelTypes.add(new SpinnerWrapper("petrol92", "Petrol 92 - Normal"));
         fuelTypes.add(new SpinnerWrapper("petrol95", "Petrol 95 - Super"));
         fuelTypes.add(new SpinnerWrapper("diesel92", "Diesel 92 - Normal"));
@@ -105,6 +109,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         switch (view.getId()){
             case R.id.btn_enterQueue:
                 Toast.makeText(this, "Entered to Queue", Toast.LENGTH_LONG).show();
+                //Pass enteredQueueId to next activity, selectedFuelType.getName(), txtView_shedName.getText().toString()
                 Intent intent = new Intent(ViewFuelDetails.this, QueueDetails.class);
                 startActivity(intent);
                 break;
@@ -119,6 +124,8 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
             case R.id.spinner_fuelType:
                 if(!adapterView.getItemAtPosition(i).toString().equals("Select a Fuel Type")){
                     selectedFuelType = (SpinnerWrapper) adapterView.getSelectedItem();
+                    getFuelDetails("petrol", "cde");//Change the hardcoded values to be dynamic
+                    getQueueDetails("petrol", "abc");
                     this.showUIElements();
                 }else{
                     selectedFuelType = new SpinnerWrapper();
@@ -212,21 +219,63 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
         getFuelAPI = getFuelAPI + fuelType.trim() + "/" + shedName.trim();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, getShedByIdAPI,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getFuelAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.e(TAG, "onResponse: "+response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            ShedModel shedModel = new ShedModel(
+                            FuelModel fuelModel = new FuelModel(
                                     jsonObject.getString("id"),
+                                    jsonObject.getString("fuelType"),
                                     jsonObject.getString("shedName"),
-                                    jsonObject.getString("location")
+                                    jsonObject.getString("date"),
+                                    jsonObject.getString("arrivalTime"),
+                                    jsonObject.getString("arrivedLitres"),
+                                    jsonObject.getString("remainLitres")
                             );
 
-                            txtView_shedName.setText(shedModel.getShedName());
-                            txtView_shedLocat.setText(shedModel.getLocation());
+                            txtView_arrTime.setText(fuelModel.getArrivalTime());
+                            txtView_arrAmount.setText(fuelModel.getArrivedLitres());
+                            txtView_remAmount.setText(fuelModel.getRemainLitres());
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "onErrorResponse: "+error.getLocalizedMessage());
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+
+    public void getQueueDetails(String fuelType, String shedName){
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        getQueueAPI = getQueueAPI + fuelType.trim() + "/" + shedName.trim();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getFuelAPI,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e(TAG, "onResponse: "+response);
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            QueueModel queueModel = new QueueModel(
+                                    jsonObject.getString("id"),
+                                    jsonObject.getString("shedName"),
+                                    jsonObject.getString("date"),
+                                    jsonObject.getString("fuelType"),
+                                    jsonObject.getInt("vehicleCount")
+                            );
+
+                            txtView_vehCount.setText(String.valueOf(queueModel.getVehicleCount()));
+                            enteredQueueId = queueModel.getId();
 
                         } catch (JSONException e) {
                             e.printStackTrace();

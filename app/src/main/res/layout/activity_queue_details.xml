@@ -102,7 +102,7 @@
         app:srcCompat="@drawable/homeicon" />
 
     <ImageButton
-        android:id="@+id/imgbtn_home4"
+        android:id="@+id/imgbtn_refresh"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:backgroundTint="#FFFFFF"
