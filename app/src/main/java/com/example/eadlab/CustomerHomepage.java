@@ -25,6 +25,7 @@ import com.example.eadlab.Model.ShedModel;
 import com.example.eadlab.Model.UserModel;
 import com.example.eadlab.RetroFit.IMyService;
 import com.example.eadlab.RetroFit.RetroFitClient;
+import com.example.eadlab.Wrapper.SpinnerWrapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,43 +51,85 @@ import io.reactivex.disposables.Disposables;
 
 public class CustomerHomepage extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
 
-    private TextView txtVehNumber, txtVehType, txtFuelType;
+    private TextView txtVehNumber, txtVehType, txtFuelType, txtNoShed;
     private Spinner spinnerLocation, spinnerShedName;
     private EditText edtTxtDate;
     private Button btnCheckFuel;
 
-    private String selectedLocation, selectedShed;
-    //test
-    CompositeDisposable compositeDisposable = new CompositeDisposable();
-    IMyService iMyService;
+    private SpinnerWrapper selectedLocation, selectedShed;
+    private String selectedShedId;
 
-    String api = "http://192.168.1.30:7135/api/Customer";
-    String userDetailAPI = EndpointURL.GET_CUSTOMER_BY_ID;
+    //Endpoints
+    String userDetailAPI = EndpointURL.GET_CUSTOMER_BY_ID + "634eba7a5e2da36177ba8640";
     String shedDetailAPI = EndpointURL.GET_ALL_SHEDS;
-    ArrayList<ShedModel> shedModelList;
-    List<String> locations;
+    String shedsForLocatAPI = EndpointURL.GET_SHEDS_FOR_LOCATION;
+
+    //Endpoint Variables
+    List<SpinnerWrapper> locations;
+    List<SpinnerWrapper> sheds;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_customer_homepage);
+
+        //Get all the components IDs
+        txtVehNumber = findViewById(R.id.txt_veh_num);
+        txtVehType = findViewById(R.id.txt_veh_type);
+        txtFuelType = findViewById(R.id.txt_veh_fueltype);
+        txtNoShed = findViewById(R.id.txt_noShed);
+
+        spinnerLocation = findViewById(R.id.spinner_location);
+        spinnerShedName = findViewById(R.id.spinner_fuelstation);
+
+        edtTxtDate = findViewById(R.id.edittxt_date);
+
+        btnCheckFuel = findViewById(R.id.btn_checkfuel);
+
+        edtTxtDate.setText(this.getCurrentDate());
+
+        locations = new ArrayList<>();
+        locations.add(new SpinnerWrapper("01", "Select a location"));
+
+        sheds = new ArrayList<>();
+        sheds.add(new SpinnerWrapper("01", "Select a Fuel Station"));
+
+        //Get the vehicle details based on logged in user id
+        getLoggedInUserDetails();
+        getAllSheds();
+
+        //Hide the shed name spinner, date field and button
+        this.hideUIElements();
+
+        spinnerLocation.setOnItemSelectedListener(this);
+        spinnerShedName.setOnItemSelectedListener(this);
+
+        //Button click
+        btnCheckFuel.setOnClickListener(this);
+    }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         switch (adapterView.getId()){
             case R.id.spinner_location:
                 if(!adapterView.getItemAtPosition(i).toString().equals("Select a location")){
-                    //Toast.makeText(this, "Selected Location is : "+adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_LONG).show();
-                    selectedLocation = adapterView.getItemAtPosition(i).toString();
+                    selectedLocation = (SpinnerWrapper) adapterView.getSelectedItem();
+                    getShedsForLocation(selectedLocation.getName());
                     this.showUIElements();
                 }else{
-                    selectedLocation = "";
+                    selectedLocation = new SpinnerWrapper();
                     this.hideUIElements();
                 }
                 break;
             case R.id.spinner_fuelstation:
                 if(!adapterView.getItemAtPosition(i).toString().equals("Select a Fuel Station")){
-                    selectedShed = adapterView.getItemAtPosition(i).toString();
+                    selectedShed = (SpinnerWrapper) adapterView.getSelectedItem();
+                    Log.e(TAG, "Selected Shed ID: "+selectedShed.getId());
                 }else{
-                    selectedShed = "";
+                    selectedShed = new SpinnerWrapper();
                 }
                 break;
-                //Toast.makeText(this, "Selected Shed Name is"+adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_SHORT).show();
             default:
                 break;
         }
@@ -101,10 +144,9 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_checkfuel:
-                if(!selectedLocation.isEmpty() && !selectedShed.isEmpty() && !edtTxtDate.getText().toString().isEmpty()){
-                    getAllData();
-//                    Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
-//                    startActivity(intent);
+                if(!selectedLocation.getName().isEmpty() && !selectedShed.getName().isEmpty() && !edtTxtDate.getText().toString().isEmpty()){
+                    Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
+                    startActivity(intent);
                 }else{
                     Toast.makeText(this, "Please fill the required fields to continue!"+selectedShed, Toast.LENGTH_LONG).show();
                 }
@@ -113,46 +155,6 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
                 break;
         }
 
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer_homepage);
-
-        //Get all the components IDs
-        txtVehNumber = findViewById(R.id.txt_veh_num);
-        txtVehType = findViewById(R.id.txt_veh_type);
-        txtFuelType = findViewById(R.id.txt_veh_fueltype);
-
-        spinnerLocation = findViewById(R.id.spinner_location);
-        spinnerShedName = findViewById(R.id.spinner_fuelstation);
-
-        edtTxtDate = findViewById(R.id.edittxt_date);
-
-        btnCheckFuel = findViewById(R.id.btn_checkfuel);
-
-        edtTxtDate.setText(this.getCurrentDate());
-
-        shedModelList = new ArrayList<>();
-        locations = new ArrayList<>();
-        locations.add("Select a location");
-
-        //Get the vehicle details based on logged in user id
-        getLoggedInUserDetails();
-        getAllSheds();
-
-        //Hide the shed name spinner, date field and button
-        this.hideUIElements();
-
-        spinnerLocation.setOnItemSelectedListener(this);
-        spinnerShedName.setOnItemSelectedListener(this);
-
-        //Button click
-        btnCheckFuel.setOnClickListener(this);
-        //test
-        Retrofit retrofitClient = RetroFitClient.getInstance();
-        iMyService  = retrofitClient.create(IMyService.class);
     }
 
     public void showUIElements(){
@@ -235,14 +237,15 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
                                         jsonObject.getString("location")
                                 );
 
-                                shedModelList.add(shedModel);
-                                locations.add(shedModel.getLocation());
+                                SpinnerWrapper spinnerWrapper = new SpinnerWrapper();
+                                spinnerWrapper.setId(shedModel.getId());
+                                spinnerWrapper.setName(shedModel.getLocation());
+                                locations.add(spinnerWrapper);
                             }
 
 
-                            String[] shedLocations = locations.toArray(new String[0]);
-                            ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-                                    CustomerHomepage.this, android.R.layout.simple_spinner_item, shedLocations);
+                            ArrayAdapter<SpinnerWrapper> spinnerArrayAdapter = new ArrayAdapter<SpinnerWrapper>(
+                                    CustomerHomepage.this, android.R.layout.simple_spinner_item, locations);
                             spinnerLocation.setAdapter(spinnerArrayAdapter);
                             //spinnerLocation
 
@@ -262,14 +265,44 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         queue.add(stringRequest);
     }
 
-    public void getAllData(){
+    public void getShedsForLocation(String location){
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+        shedsForLocatAPI = shedsForLocatAPI + location.trim();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, shedsForLocatAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.e(TAG, "onResponse: "+response.toString());
+                        Log.e(TAG, "onResponse: "+response);
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for(int i = 0; i < jsonArray.length(); i++){
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                ShedModel shedModel = new ShedModel(
+                                        jsonObject.getString("id"),
+                                        jsonObject.getString("shedName"),
+                                        jsonObject.getString("location")
+                                );
+
+                                SpinnerWrapper spinnerWrapper = new SpinnerWrapper();
+                                spinnerWrapper.setId(shedModel.getId());
+                                spinnerWrapper.setName(shedModel.getShedName());
+                                sheds.add(spinnerWrapper);
+                            }
+
+                            if(sheds.size() >= 1){
+                                txtNoShed.setVisibility(TextView.INVISIBLE);
+                                ArrayAdapter<SpinnerWrapper> spinnerArrayAdapter = new ArrayAdapter<SpinnerWrapper>(
+                                        CustomerHomepage.this, android.R.layout.simple_spinner_item, sheds);
+                                spinnerShedName.setAdapter(spinnerArrayAdapter);
+                            }else{
+                                txtNoShed.setVisibility(TextView.VISIBLE);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -279,12 +312,47 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         });
 
         queue.add(stringRequest);
-
     }
 
     @Override
     protected void onStop() {
-        compositeDisposable.clear();
         super.onStop();
     }
+
+    //Spinner class
+//    public class SpinnerWrapper{
+//        private String id;
+//        private String name;
+//
+//        @Override
+//        public String toString(){
+//            return name;
+//        }
+//
+//        public SpinnerWrapper(){
+//            this.id = "";
+//            this.name = "";
+//        }
+//
+//        public SpinnerWrapper(String id, String name) {
+//            this.id = id;
+//            this.name = name;
+//        }
+//
+//        public String getId() {
+//            return id;
+//        }
+//
+//        public void setId(String id) {
+//            this.id = id;
+//        }
+//
+//        public String getName() {
+//            return name;
+//        }
+//
+//        public void setName(String name) {
+//            this.name = name;
+//        }
+//    }
 }

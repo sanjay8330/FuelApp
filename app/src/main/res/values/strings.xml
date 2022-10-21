@@ -37,6 +37,7 @@
     <string name="label_time">00:00:00 A.M</string>
     <string name="btn_label_exit">Exit Queue</string>
     <string name="btn_fueled">Fueled Vehicle</string>
+    <string name="shed_notavailable">No Registered Shed available in selected location</string>
     <string-array name="location_array">
         <item>Select a location</item>
         <item>Location 1</item>
