@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,9 +56,9 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
     private Spinner spinnerLocation, spinnerShedName;
     private EditText edtTxtDate;
     private Button btnCheckFuel;
+    private ImageView imageView_shed, imageView_date;
 
     private SpinnerWrapper selectedLocation, selectedShed;
-    private String selectedShedId;
 
     //Endpoints
     String userDetailAPI = EndpointURL.GET_CUSTOMER_BY_ID + "634eba7a5e2da36177ba8640";
@@ -87,11 +88,21 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
 
         btnCheckFuel = findViewById(R.id.btn_checkfuel);
 
-        edtTxtDate.setText(this.getCurrentDate());
+        imageView_shed = findViewById(R.id.imgView_shed);
+        imageView_date = findViewById(R.id.imgView_date);
 
+        //Handle TextViews
+        txtNoShed.setVisibility(TextView.INVISIBLE);
+
+        //Handle Date Field
+        edtTxtDate.setText(this.getCurrentDate());
+        edtTxtDate.setEnabled(false);
+
+        //Handle Location Spinner
         locations = new ArrayList<>();
         locations.add(new SpinnerWrapper("01", "Select a location"));
 
+        //Handle Fuel Station Spinner
         sheds = new ArrayList<>();
         sheds.add(new SpinnerWrapper("01", "Select a Fuel Station"));
 
@@ -114,11 +125,12 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         switch (adapterView.getId()){
             case R.id.spinner_location:
                 if(!adapterView.getItemAtPosition(i).toString().equals("Select a location")){
+                    selectedLocation = new SpinnerWrapper();
                     selectedLocation = (SpinnerWrapper) adapterView.getSelectedItem();
                     getShedsForLocation(selectedLocation.getName());
                     this.showUIElements();
                 }else{
-                    selectedLocation = new SpinnerWrapper();
+                    Toast.makeText(this, "Please select a location!", Toast.LENGTH_LONG);
                     this.hideUIElements();
                 }
                 break;
@@ -161,12 +173,16 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         spinnerShedName.setVisibility(View.VISIBLE);
         edtTxtDate.setVisibility(View.VISIBLE);
         btnCheckFuel.setVisibility(View.VISIBLE);
+        imageView_date.setVisibility(View.VISIBLE);
+        imageView_shed.setVisibility(View.VISIBLE);
     }
 
     public void hideUIElements(){
         spinnerShedName.setVisibility(View.INVISIBLE);
         edtTxtDate.setVisibility(View.INVISIBLE);
         btnCheckFuel.setVisibility(View.INVISIBLE);
+        imageView_date.setVisibility(View.INVISIBLE);
+        imageView_shed.setVisibility(View.INVISIBLE);
     }
 
     public String getCurrentDate(){
@@ -179,8 +195,7 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         return formattedDate;
     }
 
-    //test
-    private static final String TAG = "CustomerHomePage";
+    private static final String TAG = "CUSTOMER_HOMEPAGE_LOG";
 
     public void getLoggedInUserDetails(){
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -243,13 +258,9 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
                                 locations.add(spinnerWrapper);
                             }
 
-
                             ArrayAdapter<SpinnerWrapper> spinnerArrayAdapter = new ArrayAdapter<SpinnerWrapper>(
                                     CustomerHomepage.this, android.R.layout.simple_spinner_item, locations);
                             spinnerLocation.setAdapter(spinnerArrayAdapter);
-                            //spinnerLocation
-
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -276,27 +287,33 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
                     public void onResponse(String response) {
                         Log.e(TAG, "onResponse: "+response);
                         try {
-                            JSONArray jsonArray = new JSONArray(response);
-                            for(int i = 0; i < jsonArray.length(); i++){
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                ShedModel shedModel = new ShedModel(
-                                        jsonObject.getString("id"),
-                                        jsonObject.getString("shedName"),
-                                        jsonObject.getString("location")
-                                );
+                            if(!response.isEmpty()){
+                                JSONArray jsonArray = new JSONArray(response);
+                                for(int i = 0; i < jsonArray.length(); i++){
+                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                    ShedModel shedModel = new ShedModel(
+                                            jsonObject.getString("id"),
+                                            jsonObject.getString("shedName"),
+                                            jsonObject.getString("location")
+                                    );
 
-                                SpinnerWrapper spinnerWrapper = new SpinnerWrapper();
-                                spinnerWrapper.setId(shedModel.getId());
-                                spinnerWrapper.setName(shedModel.getShedName());
-                                sheds.add(spinnerWrapper);
-                            }
+                                    SpinnerWrapper spinnerWrapper = new SpinnerWrapper();
+                                    spinnerWrapper.setId(shedModel.getId());
+                                    spinnerWrapper.setName(shedModel.getShedName());
+                                    sheds.add(spinnerWrapper);
+                                }
 
-                            if(sheds.size() >= 1){
-                                txtNoShed.setVisibility(TextView.INVISIBLE);
-                                ArrayAdapter<SpinnerWrapper> spinnerArrayAdapter = new ArrayAdapter<SpinnerWrapper>(
-                                        CustomerHomepage.this, android.R.layout.simple_spinner_item, sheds);
-                                spinnerShedName.setAdapter(spinnerArrayAdapter);
+                                if(sheds.size() >= 1){
+                                    txtNoShed.setVisibility(TextView.INVISIBLE);
+                                    ArrayAdapter<SpinnerWrapper> spinnerArrayAdapter = new ArrayAdapter<SpinnerWrapper>(
+                                            CustomerHomepage.this, android.R.layout.simple_spinner_item, sheds);
+                                    spinnerShedName.setAdapter(spinnerArrayAdapter);
+                                }else{
+                                    hideUIElements();
+                                    txtNoShed.setVisibility(TextView.VISIBLE);
+                                }
                             }else{
+                                hideUIElements();
                                 txtNoShed.setVisibility(TextView.VISIBLE);
                             }
 
@@ -319,40 +336,4 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         super.onStop();
     }
 
-    //Spinner class
-//    public class SpinnerWrapper{
-//        private String id;
-//        private String name;
-//
-//        @Override
-//        public String toString(){
-//            return name;
-//        }
-//
-//        public SpinnerWrapper(){
-//            this.id = "";
-//            this.name = "";
-//        }
-//
-//        public SpinnerWrapper(String id, String name) {
-//            this.id = id;
-//            this.name = name;
-//        }
-//
-//        public String getId() {
-//            return id;
-//        }
-//
-//        public void setId(String id) {
-//            this.id = id;
-//        }
-//
-//        public String getName() {
-//            return name;
-//        }
-//
-//        public void setName(String name) {
-//            this.name = name;
-//        }
-//    }
 }

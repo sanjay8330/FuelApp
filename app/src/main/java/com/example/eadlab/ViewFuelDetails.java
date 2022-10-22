@@ -37,14 +37,14 @@ import java.util.List;
 
 public class ViewFuelDetails extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
 
-    private TextView txtView_shedLocat, txtView_shedName, txtView_arrTime, txtView_arrAmount, txtView_remAmount, txtView_vehCount;
+    private TextView txtView_shedLocat, txtView_shedName, txtView_arrTime, txtView_arrAmount, txtView_remAmount, txtView_vehCount, txtView_noFuel;
     private Spinner spinner_fuelType;
-    private ImageView imgView_fuelStatus, imgView_fuelQueue;
+    private ImageView imgView_fuelStatus, imgView_fuelQueue, imageView_noFuel;
     private Button btnEnterQueue;
     private TextView label_arrTime, label_arrLitres, label_remLitres, label_vehCount;
 
     SpinnerWrapper selectedFuelType;
-    String enteredQueueId;
+    String shedName, enteredQueueId;
 
     //Endpoints
     String getShedByIdAPI = EndpointURL.GET_SHED_BY_ID;
@@ -74,6 +74,13 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
         btnEnterQueue = findViewById(R.id.btn_enterQueue);
 
+        txtView_noFuel = findViewById(R.id.txtview_nofuel);
+        imageView_noFuel = findViewById(R.id.imageView_nofuel);
+
+        //Hide no fuel tags
+        txtView_noFuel.setVisibility(TextView.INVISIBLE);
+        imageView_noFuel.setVisibility(TextView.INVISIBLE);
+
         //Default labels & images
         label_arrTime = findViewById(R.id.label_fueldetail1);
         label_arrLitres = findViewById(R.id.label_fueldetail2);
@@ -95,7 +102,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         fuelTypes.add(new SpinnerWrapper("diesel92", "Diesel 92 - Normal"));
         fuelTypes.add(new SpinnerWrapper("diesel95", "Diesel 95 - Super"));
         ArrayAdapter<SpinnerWrapper> spinnerArrayAdapter = new ArrayAdapter<SpinnerWrapper>(
-                ViewFuelDetails.this, android.R.layout.simple_spinner_item, fuelTypes);
+                ViewFuelDetails.this, android.R.layout.simple_spinner_dropdown_item, fuelTypes);
         spinner_fuelType.setAdapter(spinnerArrayAdapter);
         //Get the fuel and queue details for selected fuel type
 
@@ -124,9 +131,8 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
             case R.id.spinner_fuelType:
                 if(!adapterView.getItemAtPosition(i).toString().equals("Select a Fuel Type")){
                     selectedFuelType = (SpinnerWrapper) adapterView.getSelectedItem();
-                    getFuelDetails("petrol", "cde");//Change the hardcoded values to be dynamic
-                    getQueueDetails("petrol", "abc");
-                    this.showUIElements();
+                    //getFuelDetails(selectedFuelType.getId(), shedName);
+                    getFuelAndQueueDetails("petrol", "cde");
                 }else{
                     selectedFuelType = new SpinnerWrapper();
                 }
@@ -177,7 +183,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         btnEnterQueue.setVisibility(View.VISIBLE);
     }
 
-    private static final String TAG = "ViewFuelDetailPage";
+    private static final String TAG = "VIEW_FUEL_DETAILS_PAGE_LOG";
 
     public void getShedsDetails(String id){
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -199,6 +205,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
                             txtView_shedName.setText(shedModel.getShedName());
                             txtView_shedLocat.setText(shedModel.getLocation());
+                            shedName = shedModel.getShedName();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -214,7 +221,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         queue.add(stringRequest);
     }
 
-    public void getFuelDetails(String fuelType, String shedName){
+    public void getFuelAndQueueDetails(String fuelType, String shedName){
         RequestQueue queue = Volley.newRequestQueue(this);
 
         getFuelAPI = getFuelAPI + fuelType.trim() + "/" + shedName.trim();
@@ -225,20 +232,37 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
                     public void onResponse(String response) {
                         Log.e(TAG, "onResponse: "+response);
                         try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            FuelModel fuelModel = new FuelModel(
-                                    jsonObject.getString("id"),
-                                    jsonObject.getString("fuelType"),
-                                    jsonObject.getString("shedName"),
-                                    jsonObject.getString("date"),
-                                    jsonObject.getString("arrivalTime"),
-                                    jsonObject.getString("arrivedLitres"),
-                                    jsonObject.getString("remainLitres")
-                            );
+                            if(!response.isEmpty()){
+                                JSONObject jsonObject = new JSONObject(response);
+                                FuelModel fuelModel = new FuelModel(
+                                        jsonObject.getString("id"),
+                                        jsonObject.getString("fuelType"),
+                                        jsonObject.getString("shedName"),
+                                        jsonObject.getString("date"),
+                                        jsonObject.getString("arrivalTime"),
+                                        jsonObject.getString("arrivedLitres"),
+                                        jsonObject.getString("remainLitres")
+                                );
 
-                            txtView_arrTime.setText(fuelModel.getArrivalTime());
-                            txtView_arrAmount.setText(fuelModel.getArrivedLitres());
-                            txtView_remAmount.setText(fuelModel.getRemainLitres());
+                                txtView_arrTime.setText(fuelModel.getArrivalTime());
+                                txtView_arrAmount.setText(fuelModel.getArrivedLitres());
+                                txtView_remAmount.setText(fuelModel.getRemainLitres());
+
+                                txtView_noFuel.setVisibility(TextView.INVISIBLE);
+                                imageView_noFuel.setVisibility(TextView.INVISIBLE);
+
+                                showUIElements();
+
+                                getQueueDetails("petrol", "abc");
+                                //getQueueDetails(fuelType.trim(), shedName.trim());
+
+                            }else{
+                                hideUIElements();
+
+                                //Show no fuel components
+                                txtView_noFuel.setVisibility(TextView.VISIBLE);
+                                imageView_noFuel.setVisibility(TextView.VISIBLE);
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -259,23 +283,27 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
         getQueueAPI = getQueueAPI + fuelType.trim() + "/" + shedName.trim();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, getFuelAPI,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getQueueAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.e(TAG, "onResponse: "+response);
                         try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            QueueModel queueModel = new QueueModel(
-                                    jsonObject.getString("id"),
-                                    jsonObject.getString("shedName"),
-                                    jsonObject.getString("date"),
-                                    jsonObject.getString("fuelType"),
-                                    jsonObject.getInt("vehicleCount")
-                            );
+                            if(!response.isEmpty()){
+                                JSONObject jsonObject = new JSONObject(response);
+                                QueueModel queueModel = new QueueModel(
+                                        jsonObject.getString("id"),
+                                        jsonObject.getString("shedName"),
+                                        jsonObject.getString("date"),
+                                        jsonObject.getString("fuelType"),
+                                        jsonObject.getInt("vehicleCount")
+                                );
 
-                            txtView_vehCount.setText(String.valueOf(queueModel.getVehicleCount()));
-                            enteredQueueId = queueModel.getId();
+                                txtView_vehCount.setText(String.valueOf(queueModel.getVehicleCount()));
+                                enteredQueueId = queueModel.getId();
+                            }else{
+                                Toast.makeText(ViewFuelDetails.this, "Fuel Station has no queues!", Toast.LENGTH_LONG);
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();

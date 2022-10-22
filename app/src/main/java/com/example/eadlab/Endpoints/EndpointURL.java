@@ -12,4 +12,6 @@ public class EndpointURL {
     public static final String GET_QUEUE_BY_SHEDNAME_FUELTYPE = "http://" + endpointAddress + "/api/Queue/";
     public static final String GET_QUEUE_BY_ID = "http://" + endpointAddress + "/api/Queue/";
     public static final String UPDATE_QUEUE_BY_ID = "http://" + endpointAddress + "/api/Queue/";
+    public static final String UPDATE_FUEL_BY_ID = "http://" + endpointAddress + "/api/Fuel/";
+
 }

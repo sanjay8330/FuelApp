@@ -32,9 +32,9 @@ import java.util.TimerTask;
 
 public class QueueDetails extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView txtView_updVehCount, txtView_remAmount, txtView_waitTime;
+    private TextView txtView_updVehCount, txtView_remAmount, txtView_fuelAmount;
     private Button btn_exit, btn_fueled;
-    private ImageButton imgBtn_refresh;
+    private ImageButton imgBtn_minus, imgBtn_plus, imgBtn_refresh;
 
     String queueID;
     String fuelType;
@@ -48,9 +48,11 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
     String getQueueByIdAPI = EndpointURL.GET_QUEUE_BY_ID;
     String getFuelAPI = EndpointURL.GET_FUEL_BY_SHEDNAME_FUELTYPE;
     String updateQueueByIdAPI = EndpointURL.UPDATE_QUEUE_BY_ID;
+    String updateFuelByIdAPI = EndpointURL.UPDATE_FUEL_BY_ID;
 
     //Endpoint Variables
     QueueModel queueModelOuter;
+    FuelModel fuelModelOuter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +62,17 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         //Get the ID of all necessary elements
         txtView_updVehCount = findViewById(R.id.txtview_updVehCount);
         txtView_remAmount = findViewById(R.id.label_remainfuel);
-        txtView_waitTime = findViewById(R.id.txtView_waitTime);
+        txtView_fuelAmount = findViewById(R.id.txtView_fuelAmount);
 
         btn_exit = findViewById(R.id.btn_exit);
         btn_fueled = findViewById(R.id.btn_fueled);
 
         imgBtn_refresh = findViewById(R.id.imgbtn_refresh);
+        imgBtn_minus = findViewById(R.id.imgBtn_minus);
+        imgBtn_plus = findViewById(R.id.imgBtn_plus);
+
+        //Set the fuel amount
+        txtView_fuelAmount.setText(String.valueOf(0));
 
         //Show the queue and fuel details
         queueID = "634f97552d6bab3a5d7ed2d5";
@@ -75,55 +82,57 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         getFuelDetails(fuelType, shedName);
 
         //Update the vehicle count in queue
-        //updateQueueDetails(queueID);//Update the Database
+        updateQueueDetails(queueID, Integer.valueOf(txtView_updVehCount.getText().toString()));//Update the Database
 
-        //Timer
-        //startTimer();
+        imgBtn_minus.setOnClickListener(this);
+        imgBtn_plus.setOnClickListener(this);
+        imgBtn_refresh.setOnClickListener(this);
+        btn_exit.setOnClickListener(this);
+        btn_fueled.setOnClickListener(this);
 
-        //Show the remaining fuel details
-    }
-
-    private void startTimer() {
-        timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        time++;
-                        txtView_waitTime.setText(getTimerText());
-                    }
-                });
-
-            }
-        };
-        timer.scheduleAtFixedRate(timerTask, 0, 1000);
-    }
-
-    private String getTimerText(){
-        int rounded = (int) Math.round(time);
-
-        int seconds = ((rounded % 86400) % 3600) % 60;
-        int minutes = ((rounded % 86400) % 3600) % 60;
-        int hours = ((rounded % 86400) % 3600) % 60;
-
-        return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
+            case R.id.imgBtn_minus:
+                Toast.makeText(this, "Fuel Reduced!", Toast.LENGTH_LONG).show();
+                reduceFuelAmount();
+                break;
+            case R.id.imgBtn_plus:
+                Toast.makeText(this, "Fuel Increased!", Toast.LENGTH_LONG).show();
+                increaseFuelAmount();
+                break;
             case R.id.imgbtn_refresh:
                 Toast.makeText(this, "Refreshed", Toast.LENGTH_LONG).show();
                 getFuelDetails(fuelType, shedName);
                 break;
             case R.id.btn_exit:
+                updateQueueDetails(queueID, Integer.valueOf(txtView_updVehCount.getText().toString()) - 1);
                 Toast.makeText(this, "Exited from the Queue", Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_fueled:
+                updateQueueDetails(queueID, Integer.valueOf(txtView_updVehCount.getText().toString()) - 1);
+                updateFuelDetails(fuelModelOuter.getId());
                 Toast.makeText(this, "Fueled the vehicle", Toast.LENGTH_LONG).show();
             default:
                 break;
+        }
+    }
+
+    public void reduceFuelAmount() {
+        String currFuelAmount = txtView_fuelAmount.getText().toString();
+        if(Integer.valueOf(currFuelAmount) > 0){
+            int newFuelAmount = Integer.valueOf(currFuelAmount) - 1;
+            txtView_fuelAmount.setText(String.valueOf(newFuelAmount));
+        }
+    }
+
+    public void increaseFuelAmount() {
+        String currFuelAmount = txtView_fuelAmount.getText().toString();
+        if(Integer.valueOf(currFuelAmount) < 50){
+            int newFuelAmount = Integer.valueOf(currFuelAmount) + 1;
+            txtView_fuelAmount.setText(String.valueOf(newFuelAmount));
         }
     }
 
@@ -140,17 +149,21 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
                     public void onResponse(String response) {
                         Log.e(TAG, "onResponse: "+response);
                         try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            QueueModel queueModel = new QueueModel(
-                                    jsonObject.getString("id"),
-                                    jsonObject.getString("shedName"),
-                                    jsonObject.getString("date"),
-                                    jsonObject.getString("fuelType"),
-                                    jsonObject.getInt("vehicleCount")
-                            );
+                            if(!response.isEmpty()){
+                                JSONObject jsonObject = new JSONObject(response);
+                                QueueModel queueModel = new QueueModel(
+                                        jsonObject.getString("id"),
+                                        jsonObject.getString("shedName"),
+                                        jsonObject.getString("date"),
+                                        jsonObject.getString("fuelType"),
+                                        jsonObject.getInt("vehicleCount")
+                                );
 
-                            txtView_updVehCount.setText(String.valueOf(queueModel.getVehicleCount() + 1));
-                            queueModelOuter = queueModel;
+                                txtView_updVehCount.setText(String.valueOf(queueModel.getVehicleCount() + 1));
+                                queueModelOuter = queueModel;
+                            }else{
+                                Toast.makeText(QueueDetails.this, "No queue in fuel station!", Toast.LENGTH_LONG);
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -166,7 +179,51 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         queue.add(stringRequest);
     }
 
-    public void updateQueueDetails(String id){
+    public void getFuelDetails(String fuelType, String shedName){
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        getFuelAPI = getFuelAPI + fuelType.trim() + "/" + shedName.trim();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getFuelAPI,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e(TAG, "onResponse: "+response);
+                        try {
+                            if(!response.isEmpty()){
+                                JSONObject jsonObject = new JSONObject(response);
+                                FuelModel fuelModel = new FuelModel(
+                                        jsonObject.getString("id"),
+                                        jsonObject.getString("fuelType"),
+                                        jsonObject.getString("shedName"),
+                                        jsonObject.getString("date"),
+                                        jsonObject.getString("arrivalTime"),
+                                        jsonObject.getString("arrivedLitres"),
+                                        jsonObject.getString("remainLitres")
+                                );
+
+                                txtView_remAmount.setText(fuelModel.getRemainLitres());
+                                fuelModelOuter = fuelModel;
+                            }else{
+                                Toast.makeText(QueueDetails.this, "Fuel not available!", Toast.LENGTH_LONG);
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "onErrorResponse: "+error.getLocalizedMessage());
+            }
+        });
+
+        queue.add(stringRequest);
+    }
+
+    public void updateQueueDetails(String id, int vehicleCount){
         RequestQueue queue = Volley.newRequestQueue(this);
 
         updateQueueByIdAPI = updateQueueByIdAPI + id.trim();
@@ -194,7 +251,7 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
                 params.put("shedName", queueModelOuter.getShedName());
                 params.put("date", queueModelOuter.getDate());
                 params.put("fuelType", queueModelOuter.getFuelType());
-                params.put("vehicleCount", txtView_updVehCount.getText().toString());
+                params.put("vehicleCount", String.valueOf(vehicleCount));
 
                 // at last we are
                 // returning our params.
@@ -205,42 +262,51 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         queue.add(stringRequest);
     }
 
-    public void getFuelDetails(String fuelType, String shedName){
+    public void updateFuelDetails(String id){
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        getFuelAPI = getFuelAPI + fuelType.trim() + "/" + shedName.trim();
+        updateFuelByIdAPI = updateFuelByIdAPI + id.trim();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, getFuelAPI,
+        StringRequest stringRequest = new StringRequest(Request.Method.PUT, updateFuelByIdAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.e(TAG, "onResponse: "+response);
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            FuelModel fuelModel = new FuelModel(
-                                    jsonObject.getString("id"),
-                                    jsonObject.getString("fuelType"),
-                                    jsonObject.getString("shedName"),
-                                    jsonObject.getString("date"),
-                                    jsonObject.getString("arrivalTime"),
-                                    jsonObject.getString("arrivedLitres"),
-                                    jsonObject.getString("remainLitres")
-                            );
-
-                            txtView_remAmount.setText(fuelModel.getRemainLitres());
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        Toast.makeText(QueueDetails.this, "Database Updated!", Toast.LENGTH_LONG).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "onErrorResponse: "+error.getLocalizedMessage());
             }
-        });
+        }) {
+            @Override
+            protected Map<String, String> getParams(){
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                params.put("id", fuelModelOuter.getId());
+                params.put("fuelType", fuelModelOuter.getFuelType());
+                params.put("shedName", fuelModelOuter.getShedName());
+                params.put("date", fuelModelOuter.getDate());
+                params.put("arrivalTime", fuelModelOuter.getArrivalTime());
+                params.put("arrivedLitres", fuelModelOuter.getArrivedLitres());
+
+                int updRemainAmount = updateFuelAmount(Integer.valueOf(fuelModelOuter.getRemainLitres()));
+                params.put("remainLitres", String.valueOf(updRemainAmount));
+
+                // at last we are
+                // returning our params.
+                return params;
+            }
+        };
 
         queue.add(stringRequest);
+    }
+
+    public int updateFuelAmount(int originalAmount){
+        return originalAmount - Integer.valueOf(txtView_fuelAmount.getText().toString());
     }
 
 }
