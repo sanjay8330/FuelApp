@@ -92,12 +92,15 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
 
         //Get the petrol shed details based on selected shed id
-        getShedsDetails("634ebbe45e2da36177ba8646");
+        Intent intent = getIntent();
+        String shedID = intent.getStringExtra("shedID");
+        Log.e(TAG, "onCreate: "+shedID);
+        getShedsDetails(shedID);
 
         //Add standard values to fuel type spinner
         fuelTypes = new ArrayList<>();
         fuelTypes.add(new SpinnerWrapper("01", "Select a Fuel Type"));
-        fuelTypes.add(new SpinnerWrapper("petrol92", "Petrol 92 - Normal"));
+        fuelTypes.add(new SpinnerWrapper("petrol", "Petrol 92 - Normal"));//Change the date to make it petrol92 as ID
         fuelTypes.add(new SpinnerWrapper("petrol95", "Petrol 95 - Super"));
         fuelTypes.add(new SpinnerWrapper("diesel92", "Diesel 92 - Normal"));
         fuelTypes.add(new SpinnerWrapper("diesel95", "Diesel 95 - Super"));
@@ -116,8 +119,11 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         switch (view.getId()){
             case R.id.btn_enterQueue:
                 Toast.makeText(this, "Entered to Queue", Toast.LENGTH_LONG).show();
-                //Pass enteredQueueId to next activity, selectedFuelType.getName(), txtView_shedName.getText().toString()
+                //Pass enteredQueueId to next activity, selectedFuelType.getName(), shedName
                 Intent intent = new Intent(ViewFuelDetails.this, QueueDetails.class);
+                intent.putExtra("queueID", enteredQueueId);
+                intent.putExtra("fuelType", selectedFuelType.getId());
+                intent.putExtra("shedName", shedName);
                 startActivity(intent);
                 break;
             default:
@@ -131,8 +137,8 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
             case R.id.spinner_fuelType:
                 if(!adapterView.getItemAtPosition(i).toString().equals("Select a Fuel Type")){
                     selectedFuelType = (SpinnerWrapper) adapterView.getSelectedItem();
-                    //getFuelDetails(selectedFuelType.getId(), shedName);
-                    getFuelAndQueueDetails("petrol", "cde");
+                    getFuelAndQueueDetails(selectedFuelType.getId(), shedName);
+                    //getFuelAndQueueDetails("petrol", "cde");
                 }else{
                     selectedFuelType = new SpinnerWrapper();
                 }
@@ -195,20 +201,24 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
                     @Override
                     public void onResponse(String response) {
                         Log.e(TAG, "onResponse: "+response);
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            ShedModel shedModel = new ShedModel(
-                                    jsonObject.getString("id"),
-                                    jsonObject.getString("shedName"),
-                                    jsonObject.getString("location")
-                            );
+                        if(!response.isEmpty()){
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                ShedModel shedModel = new ShedModel(
+                                        jsonObject.getString("id"),
+                                        jsonObject.getString("shedName"),
+                                        jsonObject.getString("location")
+                                );
 
-                            txtView_shedName.setText(shedModel.getShedName());
-                            txtView_shedLocat.setText(shedModel.getLocation());
-                            shedName = shedModel.getShedName();
+                                txtView_shedName.setText(shedModel.getShedName());
+                                txtView_shedLocat.setText(shedModel.getLocation());
+                                shedName = shedModel.getShedName();
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+                            Log.e(TAG, "Shed details cannot be retrieved!");
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -224,9 +234,9 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
     public void getFuelAndQueueDetails(String fuelType, String shedName){
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        getFuelAPI = getFuelAPI + fuelType.trim() + "/" + shedName.trim();
+        String getAPI = getFuelAPI + fuelType.trim() + "/" + shedName.trim();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, getFuelAPI,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -272,6 +282,12 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "onErrorResponse: "+error.getLocalizedMessage());
+
+                hideUIElements();
+
+                //Show no fuel components
+                txtView_noFuel.setVisibility(TextView.VISIBLE);
+                imageView_noFuel.setVisibility(TextView.VISIBLE);
             }
         });
 

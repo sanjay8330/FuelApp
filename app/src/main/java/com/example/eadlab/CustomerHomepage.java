@@ -36,8 +36,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 
 import io.reactivex.Scheduler;
@@ -104,7 +106,6 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
 
         //Handle Fuel Station Spinner
         sheds = new ArrayList<>();
-        sheds.add(new SpinnerWrapper("01", "Select a Fuel Station"));
 
         //Get the vehicle details based on logged in user id
         getLoggedInUserDetails();
@@ -158,6 +159,7 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
             case R.id.btn_checkfuel:
                 if(!selectedLocation.getName().isEmpty() && !selectedShed.getName().isEmpty() && !edtTxtDate.getText().toString().isEmpty()){
                     Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
+                    intent.putExtra("shedID", selectedShed.getId());
                     startActivity(intent);
                 }else{
                     Toast.makeText(this, "Please fill the required fields to continue!"+selectedShed, Toast.LENGTH_LONG).show();
@@ -256,6 +258,7 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
                                 spinnerWrapper.setId(shedModel.getId());
                                 spinnerWrapper.setName(shedModel.getLocation());
                                 locations.add(spinnerWrapper);
+
                             }
 
                             ArrayAdapter<SpinnerWrapper> spinnerArrayAdapter = new ArrayAdapter<SpinnerWrapper>(
@@ -279,9 +282,11 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
     public void getShedsForLocation(String location){
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        shedsForLocatAPI = shedsForLocatAPI + location.trim();
+        String shedsAPI = shedsForLocatAPI + location.trim();
+        sheds.clear();
+        sheds.add(new SpinnerWrapper("01", "Select a Fuel Station"));
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, shedsForLocatAPI,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, shedsAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

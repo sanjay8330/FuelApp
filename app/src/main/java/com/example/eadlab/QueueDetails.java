@@ -78,9 +78,13 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         txtView_fuelAmount.setText(String.valueOf(0));
 
         //Show the queue and fuel details
-        queueID = "634f97552d6bab3a5d7ed2d5";
-        fuelType = "petrol";
-        shedName = "cde";
+        Intent intent = getIntent();
+        queueID = intent.getStringExtra("queueID");
+        fuelType = intent.getStringExtra("fuelType");
+        shedName = intent.getStringExtra("shedName");
+//        queueID = "634f97552d6bab3a5d7ed2d5";
+//        fuelType = "petrol";
+//        shedName = "cde";
         getQueueDetails(queueID);
         getFuelDetails(fuelType, shedName);
 
@@ -188,9 +192,9 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
     public void getFuelDetails(String fuelType, String shedName){
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        getFuelAPI = getFuelAPI + fuelType.trim() + "/" + shedName.trim();
+        String getAPI = getFuelAPI + fuelType.trim() + "/" + shedName.trim();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, getFuelAPI,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
