@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
     private ImageButton imgBtn_minus, imgBtn_plus, imgBtn_refresh;
 
     String queueID;
+    String fuelID;
     String fuelType;
     String shedName;
     int currVehicleCount = 0;
@@ -82,9 +84,6 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         getQueueDetails(queueID);
         getFuelDetails(fuelType, shedName);
 
-        //Update the vehicle count in queue
-        //updateQueueDetails(queueID, currVehicleCount);//Update the Database
-
         imgBtn_minus.setOnClickListener(this);
         imgBtn_plus.setOnClickListener(this);
         imgBtn_refresh.setOnClickListener(this);
@@ -97,25 +96,28 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.imgBtn_minus:
-                Toast.makeText(this, "Fuel Reduced!", Toast.LENGTH_LONG).show();
                 reduceFuelAmount();
                 break;
             case R.id.imgBtn_plus:
-                Toast.makeText(this, "Fuel Increased!", Toast.LENGTH_LONG).show();
                 increaseFuelAmount();
                 break;
             case R.id.imgbtn_refresh:
-                Toast.makeText(this, "Refreshed", Toast.LENGTH_LONG).show();
                 getFuelDetails(fuelType, shedName);
+                Toast.makeText(this, "Fuel Amount Refreshed", Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_exit:
-                //updateQueueDetails(queueID, Integer.valueOf(txtView_updVehCount.getText().toString()) - 1);
+                updateQueueDetails(queueID, String.valueOf(currVehicleCount - 1));
                 Toast.makeText(this, "Exited from the Queue", Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_fueled:
-                //updateQueueDetails(queueID, Integer.valueOf(txtView_updVehCount.getText().toString()) - 1);
-                updateFuelDetails(fuelModelOuter.getId());
-                Toast.makeText(this, "Fueled the vehicle", Toast.LENGTH_LONG).show();
+                if(Integer.valueOf(txtView_fuelAmount.getText().toString()) > 0){
+                    updateQueueDetails(queueID, String.valueOf(currVehicleCount - 1));
+                    updateFuelDetails(fuelID);
+                    Toast.makeText(this, "Fueled the vehicle successfully!", Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(this, "Please enter the fuel amount!", Toast.LENGTH_LONG).show();
+                }
+                break;
             default:
                 break;
         }
@@ -164,7 +166,6 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
                                 currVehicleCount = queueModel.getVehicleCount();
                                 queueModelOuter = queueModel;
 
-                                //updateQueueDetails(queueID, String.valueOf(currVehicleCount));//Update Database
                                 updateQueueDetails(queueID, String.valueOf(currVehicleCount + 1));
                             }else{
                                 Toast.makeText(QueueDetails.this, "No queue in fuel station!", Toast.LENGTH_LONG);
@@ -208,6 +209,7 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
                                 );
 
                                 txtView_remAmount.setText(fuelModel.getRemainLitres());
+                                fuelID = fuelModel.getId().trim();
                                 fuelModelOuter = fuelModel;
                             }else{
                                 Toast.makeText(QueueDetails.this, "Fuel not available!", Toast.LENGTH_LONG);
@@ -231,40 +233,63 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
     public void updateFuelDetails(String id){
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        updateFuelByIdAPI = updateFuelByIdAPI + id.trim();
+        String updateAPI = updateFuelByIdAPI + id.trim();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.PUT, updateFuelByIdAPI,
+        StringRequest stringRequest = new StringRequest(Request.Method.PUT, updateAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.e(TAG, "onResponse: "+response);
-                        Toast.makeText(QueueDetails.this, "Database Updated!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(QueueDetails.this, "Fuel Amount Updated!", Toast.LENGTH_LONG).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "onErrorResponse: "+error.getLocalizedMessage());
+                Log.e(TAG, "Cannot update fuel details: "+error.getLocalizedMessage());
             }
         }) {
+//            @Override
+//            protected Map<String, String> getParams(){
+//                Map<String, String> params = new HashMap<String, String>();
+//
+//                // on below line we are passing our key
+//                // and value pair to our parameters.
+//                params.put("id", fuelModelOuter.getId());
+//                params.put("fuelType", fuelModelOuter.getFuelType());
+//                params.put("shedName", fuelModelOuter.getShedName());
+//                params.put("date", fuelModelOuter.getDate());
+//                params.put("arrivalTime", fuelModelOuter.getArrivalTime());
+//                params.put("arrivedLitres", fuelModelOuter.getArrivedLitres());
+//
+//                int updRemainAmount = updateFuelAmount(Integer.valueOf(fuelModelOuter.getRemainLitres()));
+//                params.put("remainLitres", String.valueOf(updRemainAmount));
+//
+//                // at last we are
+//                // returning our params.
+//                return params;
+//            }
+
             @Override
-            protected Map<String, String> getParams(){
-                Map<String, String> params = new HashMap<String, String>();
-
-                // on below line we are passing our key
-                // and value pair to our parameters.
-                params.put("id", fuelModelOuter.getId());
-                params.put("fuelType", fuelModelOuter.getFuelType());
-                params.put("shedName", fuelModelOuter.getShedName());
-                params.put("date", fuelModelOuter.getDate());
-                params.put("arrivalTime", fuelModelOuter.getArrivalTime());
-                params.put("arrivedLitres", fuelModelOuter.getArrivedLitres());
-
+            public byte[] getBody() {
                 int updRemainAmount = updateFuelAmount(Integer.valueOf(fuelModelOuter.getRemainLitres()));
-                params.put("remainLitres", String.valueOf(updRemainAmount));
 
-                // at last we are
-                // returning our params.
-                return params;
+                String body="{\"id\":" + "\"" + fuelModelOuter.getId() + "\"," +
+                        "\"fuelType\":" + "\"" + fuelModelOuter.getFuelType() + "\"," +
+                        "\"shedName\":" + "\"" + fuelModelOuter.getShedName() + "\"," +
+                        "\"date\":" + "\"" + fuelModelOuter.getDate() + "\"," +
+                        "\"arrivalTime\":" + "\"" + fuelModelOuter.getArrivalTime() + "\"," +
+                        "\"arrivedLitres\":" + "\"" + fuelModelOuter.getArrivedLitres() + "\"," +
+                        "\"remainLitres\":" + "\"" + updRemainAmount + "\"" +"}";
+                Log.e(TAG, "getBody: "+body.getBytes());
+
+                return body.getBytes();
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers=new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                return headers;
             }
         };
 
@@ -277,47 +302,64 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
 
     //TestUpdate code
     public void updateQueueDetails(String id, String vehicleCount){
-        updateQueueByIdAPI = updateQueueByIdAPI + id.trim();
+        RequestQueue queue = Volley.newRequestQueue(this);
 
-        // Optional Parameters to pass as POST request
-        JSONObject params = new JSONObject();
-        try {
-            params.put("id", queueModelOuter.getId());
-            params.put("shedName", queueModelOuter.getShedName());
-            params.put("date", String.valueOf(LocalDateTime.now()));
-            params.put("fuelType", queueModelOuter.getFuelType());
-            params.put("vehicleCount", vehicleCount);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        String updateAPI = updateQueueByIdAPI + id.trim();
 
-        // Make request for JSONObject
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(
-                Request.Method.PUT, updateQueueByIdAPI, params,
-                new Response.Listener<JSONObject>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.PUT, updateAPI,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        Log.e(TAG, "onResponse: Updated Successfully!");
-                        Toast.makeText(QueueDetails.this, "Updated Successfully", Toast.LENGTH_SHORT);
+                    public void onResponse(String response) {
+                        Log.e(TAG, "onUpdateResponse: "+response);
+                        Toast.makeText(QueueDetails.this, "Vehicle Count Updated!", Toast.LENGTH_LONG).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "onUpdateErrorResponse: "+error.getLocalizedMessage());
-                Toast.makeText(QueueDetails.this, "Error Occurred", Toast.LENGTH_SHORT);
+                Log.e(TAG, "Error to update vehicle count!: "+error.getMessage());
+                Toast.makeText(QueueDetails.this, "Vehicle Count cannot be Updated!", Toast.LENGTH_LONG).show();
             }
         }) {
+//            @Override
+//            protected Map<String, String> getParams(){
+//                Map<String, String> params = new HashMap<String, String>();
+//
+//                // on below line we are passing our key
+//                // and value pair to our parameters.
+//                params.put("id", queueModelOuter.getId());
+//                params.put("shedName", queueModelOuter.getShedName());
+//                params.put("date", String.valueOf(LocalDate.now()));
+//                params.put("fuelType", queueModelOuter.getFuelType());
+//                params.put("vehicleCount", vehicleCount);
+//
+//                Log.e(TAG, "getParams: "+params.toString());
+//
+//                // at last we are
+//                // returning our params.
+//                return params;
+//            }
+
+            @Override
+            public byte[] getBody() {
+                String body="{\"id\":" + "\"" + queueModelOuter.getId() + "\"," +
+                             "\"shedName\":" + "\"" + queueModelOuter.getShedName() + "\"," +
+                             "\"date\":" + "\"" + String.valueOf(LocalDate.now()) + "\"," +
+                             "\"fuelType\":" + "\"" + queueModelOuter.getFuelType() + "\"," +
+                             "\"vehicleCount\":" + "\"" + vehicleCount + "\"" +"}";
+                Log.e(TAG, "getBody: "+body.getBytes());
+                return body.getBytes();
+            }
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
+                HashMap<String, String> headers=new HashMap<String, String>();
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 return headers;
             }
-
         };
-        // Adding request to request queue
-        Volley.newRequestQueue(this).add(jsonObjReq);
+
+        queue.add(stringRequest);
+
     }
 
 }
