@@ -37,13 +37,14 @@ import java.util.TimerTask;
 
 public class QueueDetails extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView txtView_updVehCount, txtView_remAmount, txtView_fuelAmount;
+    private TextView txtView_updVehCount, txtView_remAmount, txtView_fuelAmount, txtView_fuelCost;
     private Button btn_exit, btn_fueled;
     private ImageButton imgBtn_minus, imgBtn_plus, imgBtn_refresh;
 
     String queueID, fuelID, fuelType, shedName, vehicleType;
     int currVehicleCount = 0;
     int maxFuelToPump = 0;
+    double fuelCost = 0.0;
 
     //Endpoints
     String getQueueByIdAPI = EndpointURL.GET_QUEUE_BY_ID;
@@ -64,6 +65,7 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         txtView_updVehCount = findViewById(R.id.txtview_updVehCount);
         txtView_remAmount = findViewById(R.id.label_remainfuel);
         txtView_fuelAmount = findViewById(R.id.txtView_fuelAmount);
+        txtView_fuelCost = findViewById(R.id.txtview_fuelcost);
 
         btn_exit = findViewById(R.id.btn_exit);
         btn_fueled = findViewById(R.id.btn_fueled);
@@ -85,6 +87,7 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         //Set the fuel amount
         //txtView_fuelAmount.setText(String.valueOf(0));
         txtView_fuelAmount.setText(String.valueOf(initializeFuelAmount(vehicleType)));
+        txtView_fuelCost.setText(String.valueOf(calculateFuelCost(fuelType, maxFuelToPump)));
 
         getQueueDetails(queueID);
         getFuelDetails(fuelType, shedName);
@@ -116,10 +119,20 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_fueled:
                 if(Integer.valueOf(txtView_fuelAmount.getText().toString()) > 0){
-                    if(Integer.valueOf(txtView_fuelAmount.getText().toString()) < maxFuelToPump){
+                    if(Integer.valueOf(txtView_fuelAmount.getText().toString()) <= maxFuelToPump){
                         updateQueueDetails(queueID, String.valueOf(currVehicleCount - 1));
                         updateFuelDetails(fuelID);
                         Toast.makeText(this, "Fueled the vehicle successfully!", Toast.LENGTH_LONG).show();
+
+                        //Navigate to Fueled Page
+                        Intent intent = new Intent(QueueDetails.this, fueledpage.class);
+                        intent.putExtra("shedName", shedName);
+                        intent.putExtra("vehicleType", vehicleType);
+                        intent.putExtra("fuelType", fuelType);
+                        intent.putExtra("fueledAmount", txtView_fuelAmount.getText().toString());
+                        intent.putExtra("fuelAmount", txtView_fuelCost.getText().toString());
+                        startActivity(intent);
+
                     }else{
                         Toast.makeText(this, "The fuel amount exceeds the allocated quota!", Toast.LENGTH_LONG).show();
                     }
@@ -152,11 +165,31 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         return returnFuelAmount;
     }
 
+    public double calculateFuelCost(String fuelType, int fuelAmount){
+        double cost;
+
+        if(fuelType.equals("petrol") || fuelType.equals("petrol92")){
+            cost = 370.0 * fuelAmount;
+        }else if(fuelType.equals("petrol95")){
+            cost = 410.0 * fuelAmount;
+        }else if(fuelType.equals("diesel92")){
+            cost = 480.0 * fuelAmount;
+        }else if(fuelType.equals("diesel95")){
+            cost = 515.0 * fuelAmount;
+        }else{
+            cost = 0.0;
+        }
+
+        return cost;
+    }
+
     public void reduceFuelAmount() {
         String currFuelAmount = txtView_fuelAmount.getText().toString();
         if(Integer.valueOf(currFuelAmount) > 0){
             int newFuelAmount = Integer.valueOf(currFuelAmount) - 1;
             txtView_fuelAmount.setText(String.valueOf(newFuelAmount));
+            double cost = calculateFuelCost(fuelType, Integer.valueOf(txtView_fuelAmount.getText().toString()));
+            txtView_fuelCost.setText(String.valueOf(cost));
         }
     }
 
@@ -165,6 +198,8 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         if(Integer.valueOf(currFuelAmount) < maxFuelToPump){
             int newFuelAmount = Integer.valueOf(currFuelAmount) + 1;
             txtView_fuelAmount.setText(String.valueOf(newFuelAmount));
+            double cost = calculateFuelCost(fuelType, Integer.valueOf(txtView_fuelAmount.getText().toString()));
+            txtView_fuelCost.setText(String.valueOf(cost));
         }else{
             Toast.makeText(this, "You can't exceed the allocated max quota!", Toast.LENGTH_SHORT).show();
         }
