@@ -41,11 +41,9 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
     private Button btn_exit, btn_fueled;
     private ImageButton imgBtn_minus, imgBtn_plus, imgBtn_refresh;
 
-    String queueID;
-    String fuelID;
-    String fuelType;
-    String shedName;
+    String queueID, fuelID, fuelType, shedName, vehicleType;
     int currVehicleCount = 0;
+    int maxFuelToPump = 0;
 
     //Endpoints
     String getQueueByIdAPI = EndpointURL.GET_QUEUE_BY_ID;
@@ -74,17 +72,20 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         imgBtn_minus = findViewById(R.id.imgBtn_minus);
         imgBtn_plus = findViewById(R.id.imgBtn_plus);
 
-        //Set the fuel amount
-        txtView_fuelAmount.setText(String.valueOf(0));
-
         //Show the queue and fuel details
         Intent intent = getIntent();
         queueID = intent.getStringExtra("queueID");
         fuelType = intent.getStringExtra("fuelType");
         shedName = intent.getStringExtra("shedName");
+        vehicleType = intent.getStringExtra("vehicleType");
 //        queueID = "634f97552d6bab3a5d7ed2d5";
 //        fuelType = "petrol";
 //        shedName = "cde";
+
+        //Set the fuel amount
+        //txtView_fuelAmount.setText(String.valueOf(0));
+        txtView_fuelAmount.setText(String.valueOf(initializeFuelAmount(vehicleType)));
+
         getQueueDetails(queueID);
         getFuelDetails(fuelType, shedName);
 
@@ -115,9 +116,13 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_fueled:
                 if(Integer.valueOf(txtView_fuelAmount.getText().toString()) > 0){
-                    updateQueueDetails(queueID, String.valueOf(currVehicleCount - 1));
-                    updateFuelDetails(fuelID);
-                    Toast.makeText(this, "Fueled the vehicle successfully!", Toast.LENGTH_LONG).show();
+                    if(Integer.valueOf(txtView_fuelAmount.getText().toString()) < maxFuelToPump){
+                        updateQueueDetails(queueID, String.valueOf(currVehicleCount - 1));
+                        updateFuelDetails(fuelID);
+                        Toast.makeText(this, "Fueled the vehicle successfully!", Toast.LENGTH_LONG).show();
+                    }else{
+                        Toast.makeText(this, "The fuel amount exceeds the allocated quota!", Toast.LENGTH_LONG).show();
+                    }
                 }else{
                     Toast.makeText(this, "Please enter the fuel amount!", Toast.LENGTH_LONG).show();
                 }
@@ -125,6 +130,26 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
             default:
                 break;
         }
+    }
+
+    public int initializeFuelAmount(String vehType){
+        int returnFuelAmount;
+        if(vehicleType.equals("car") || vehicleType.equals("motor-car")){
+            returnFuelAmount = 20;
+        }else if(vehType.equals("van") || vehType.equals("passenger-van")){
+            returnFuelAmount = 40;
+        }else if(vehType.equals("bus") || vehType.equals("lorry")){
+            returnFuelAmount = 60;
+        }else if(vehType.equals("bike") || vehType.equals("motor-bike")){
+            returnFuelAmount = 3;
+        }else if(vehType.equals("three-wheeler") || vehType.equals("auto")){
+            returnFuelAmount = 5;
+        }else{
+            returnFuelAmount = 0;
+        }
+
+        maxFuelToPump = returnFuelAmount;
+        return returnFuelAmount;
     }
 
     public void reduceFuelAmount() {
@@ -137,9 +162,11 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
 
     public void increaseFuelAmount() {
         String currFuelAmount = txtView_fuelAmount.getText().toString();
-        if(Integer.valueOf(currFuelAmount) < 50){
+        if(Integer.valueOf(currFuelAmount) < maxFuelToPump){
             int newFuelAmount = Integer.valueOf(currFuelAmount) + 1;
             txtView_fuelAmount.setText(String.valueOf(newFuelAmount));
+        }else{
+            Toast.makeText(this, "You can't exceed the allocated max quota!", Toast.LENGTH_SHORT).show();
         }
     }
 

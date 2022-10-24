@@ -60,16 +60,18 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
     private Button btnCheckFuel;
     private ImageView imageView_shed, imageView_date;
 
-    private SpinnerWrapper selectedLocation, selectedShed;
+    private SpinnerWrapper selectedShed;
+
+    String userId, vehicleType, selectedLocation;
 
     //Endpoints
-    String userDetailAPI = EndpointURL.GET_CUSTOMER_BY_ID + "634eba7a5e2da36177ba8640";
+    String userDetailAPI = EndpointURL.GET_CUSTOMER_BY_ID;
     String shedDetailAPI = EndpointURL.GET_ALL_SHEDS;
     String shedsForLocatAPI = EndpointURL.GET_SHEDS_FOR_LOCATION;
 
     //Endpoint Variables
-    List<SpinnerWrapper> locations;
     List<SpinnerWrapper> sheds;
+    Set<String> locationsSet;
 
 
     @Override
@@ -101,14 +103,14 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         edtTxtDate.setEnabled(false);
 
         //Handle Location Spinner
-        locations = new ArrayList<>();
-        locations.add(new SpinnerWrapper("01", "Select a location"));
+        locationsSet = new HashSet<>();
 
         //Handle Fuel Station Spinner
         sheds = new ArrayList<>();
 
         //Get the vehicle details based on logged in user id
-        getLoggedInUserDetails();
+        userId = "634eba7a5e2da36177ba8640";
+        getLoggedInUserDetails(userId);
         getAllSheds();
 
         //Hide the shed name spinner, date field and button
@@ -126,9 +128,9 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         switch (adapterView.getId()){
             case R.id.spinner_location:
                 if(!adapterView.getItemAtPosition(i).toString().equals("Select a location")){
-                    selectedLocation = new SpinnerWrapper();
-                    selectedLocation = (SpinnerWrapper) adapterView.getSelectedItem();
-                    getShedsForLocation(selectedLocation.getName());
+                    Log.e(TAG, "onItemSelected: "+adapterView.getItemAtPosition(i).toString() );
+                    selectedLocation = adapterView.getItemAtPosition(i).toString();
+                    getShedsForLocation(selectedLocation);
                     this.showUIElements();
                 }else{
                     Toast.makeText(this, "Please select a location!", Toast.LENGTH_LONG);
@@ -157,9 +159,10 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_checkfuel:
-                if(!selectedLocation.getName().isEmpty() && !selectedShed.getName().isEmpty() && !edtTxtDate.getText().toString().isEmpty()){
+                if(!selectedLocation.isEmpty() && !selectedShed.getName().isEmpty() && !edtTxtDate.getText().toString().isEmpty()){
                     Intent intent = new Intent(CustomerHomepage.this, ViewFuelDetails.class);
                     intent.putExtra("shedID", selectedShed.getId());
+                    intent.putExtra("vehicleType", vehicleType);
                     startActivity(intent);
                 }else{
                     Toast.makeText(this, "Please fill the required fields to continue!"+selectedShed, Toast.LENGTH_LONG).show();
@@ -199,10 +202,12 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
 
     private static final String TAG = "CUSTOMER_HOMEPAGE_LOG";
 
-    public void getLoggedInUserDetails(){
+    public void getLoggedInUserDetails(String userId){
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, userDetailAPI,
+        String getUserAPI = userDetailAPI + userId.trim();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getUserAPI,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -221,6 +226,7 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
                             txtVehNumber.setText(userModel.getVehicleNumber());
                             txtVehType.setText(userModel.getVehicleType());
                             txtFuelType.setText(userModel.getFuelType());
+                            vehicleType = userModel.getVehicleType().toLowerCase();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -257,12 +263,19 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
                                 SpinnerWrapper spinnerWrapper = new SpinnerWrapper();
                                 spinnerWrapper.setId(shedModel.getId());
                                 spinnerWrapper.setName(shedModel.getLocation());
-                                locations.add(spinnerWrapper);
 
+                                locationsSet.add(spinnerWrapper.getName());
                             }
 
-                            ArrayAdapter<SpinnerWrapper> spinnerArrayAdapter = new ArrayAdapter<SpinnerWrapper>(
-                                    CustomerHomepage.this, android.R.layout.simple_spinner_item, locations);
+                            List<String> locationsList = new ArrayList<>();
+                            locationsList.add("Select a location");
+
+                            for(String val: locationsSet){
+                                locationsList.add(val);
+                            }
+
+                            ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                                    CustomerHomepage.this, android.R.layout.simple_spinner_item, locationsList);
                             spinnerLocation.setAdapter(spinnerArrayAdapter);
 
                         } catch (JSONException e) {

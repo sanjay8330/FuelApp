@@ -44,7 +44,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
     private TextView label_arrTime, label_arrLitres, label_remLitres, label_vehCount;
 
     SpinnerWrapper selectedFuelType;
-    String shedName, enteredQueueId;
+    String shedName, enteredQueueId, vehicleType;
 
     //Endpoints
     String getShedByIdAPI = EndpointURL.GET_SHED_BY_ID;
@@ -94,7 +94,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         //Get the petrol shed details based on selected shed id
         Intent intent = getIntent();
         String shedID = intent.getStringExtra("shedID");
-        Log.e(TAG, "onCreate: "+shedID);
+        vehicleType = intent.getStringExtra("vehicleType");
         getShedsDetails(shedID);
 
         //Add standard values to fuel type spinner
@@ -124,6 +124,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
                 intent.putExtra("queueID", enteredQueueId);
                 intent.putExtra("fuelType", selectedFuelType.getId());
                 intent.putExtra("shedName", shedName);
+                intent.putExtra("vehicleType", vehicleType);
                 startActivity(intent);
                 break;
             default:
