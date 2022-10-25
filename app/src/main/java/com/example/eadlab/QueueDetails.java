@@ -1,3 +1,8 @@
+/*
+ * Developer     :   Sanjay Sakthivel (IT19158228)
+ * Purpose       :   Handle Queue Details page
+ * Created Date  :   18th October 2022
+ */
 package com.example.eadlab;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,7 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,7 +21,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.eadlab.Endpoints.EndpointURL;
@@ -27,21 +30,19 @@ import com.example.eadlab.Model.QueueModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class QueueDetails extends AppCompatActivity implements View.OnClickListener {
 
+    //List of variables to hold UI elements
     private TextView txtView_updVehCount, txtView_remAmount, txtView_fuelAmount, txtView_fuelCost;
     private Button btn_exit, btn_fueled;
     private ImageButton imgBtn_minus, imgBtn_plus, imgBtn_refresh;
 
-    String queueID, fuelID, fuelType, shedName, vehicleType;
+    //Local variables
+    String queueID, fuelID, fuelType, shedName, vehicleType, userID;
     int currVehicleCount = 0;
     int maxFuelToPump = 0;
     double fuelCost = 0.0;
@@ -52,7 +53,7 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
     String updateQueueByIdAPI = EndpointURL.UPDATE_QUEUE_BY_ID;
     String updateFuelByIdAPI = EndpointURL.UPDATE_FUEL_BY_ID;
 
-    //Endpoint Variables
+    //Variables related to Endpoint
     QueueModel queueModelOuter = new QueueModel();
     FuelModel fuelModelOuter;
 
@@ -61,7 +62,7 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_queue_details);
 
-        //Get the ID of all necessary elements
+        //Get the ID of necessary UI elements
         txtView_updVehCount = findViewById(R.id.txtview_updVehCount);
         txtView_remAmount = findViewById(R.id.label_remainfuel);
         txtView_fuelAmount = findViewById(R.id.txtView_fuelAmount);
@@ -80,12 +81,12 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         fuelType = intent.getStringExtra("fuelType");
         shedName = intent.getStringExtra("shedName");
         vehicleType = intent.getStringExtra("vehicleType");
+        userID = intent.getStringExtra("userID");
 //        queueID = "634f97552d6bab3a5d7ed2d5";
 //        fuelType = "petrol";
 //        shedName = "cde";
 
-        //Set the fuel amount
-        //txtView_fuelAmount.setText(String.valueOf(0));
+        //Set the initial fuel amount & cost
         txtView_fuelAmount.setText(String.valueOf(initializeFuelAmount(vehicleType)));
         txtView_fuelCost.setText(String.valueOf(calculateFuelCost(fuelType, maxFuelToPump)));
 
@@ -100,6 +101,10 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    /*************************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Handle on onclick for buttons (minus, plus, refresh, exit, fueled)
+     *************************************************************************************/
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -131,6 +136,7 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
                         intent.putExtra("fuelType", fuelType);
                         intent.putExtra("fueledAmount", txtView_fuelAmount.getText().toString());
                         intent.putExtra("fuelAmount", txtView_fuelCost.getText().toString());
+                        intent.putExtra("userID", userID);
                         startActivity(intent);
 
                     }else{
@@ -145,6 +151,10 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Initialize the fuel amount based on vehicle type
+     **********************************************************************************/
     public int initializeFuelAmount(String vehType){
         int returnFuelAmount;
         if(vehicleType.equals("car") || vehicleType.equals("motor-car")){
@@ -165,6 +175,10 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         return returnFuelAmount;
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Calculate the fuel cost based on fuel amount
+     **********************************************************************************/
     public double calculateFuelCost(String fuelType, int fuelAmount){
         double cost;
 
@@ -183,6 +197,10 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         return cost;
     }
 
+    /****************************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Handle Minus buttons (Reduce fuel amount + calculate new fuel cost)
+     ***************************************************************************************/
     public void reduceFuelAmount() {
         String currFuelAmount = txtView_fuelAmount.getText().toString();
         if(Integer.valueOf(currFuelAmount) > 0){
@@ -193,6 +211,10 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /****************************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Handle Plus buttons (Increase fuel amount + calculate new fuel cost)
+     ***************************************************************************************/
     public void increaseFuelAmount() {
         String currFuelAmount = txtView_fuelAmount.getText().toString();
         if(Integer.valueOf(currFuelAmount) < maxFuelToPump){
@@ -205,8 +227,13 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private static String TAG = "QueueDetailsPage";
+    private static String TAG = "QUEUE_DETAILS_PAGE_LOG";
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Get the queue details based on queue ID
+     * @MethodType  :   API CallOut
+     **********************************************************************************/
     public void getQueueDetails(String id){
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -251,6 +278,11 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         queue.add(stringRequest);
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Get the details of fuel on shed (Remain Fuel Litres)
+     * @MethodType  :   API CallOut
+     **********************************************************************************/
     public void getFuelDetails(String fuelType, String shedName){
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -296,6 +328,11 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         queue.add(stringRequest);
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Update the fuel amount in shed once fueled successfully
+     * @MethodType  :   API CallOut
+     **********************************************************************************/
     public void updateFuelDetails(String id){
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -362,11 +399,19 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
         queue.add(stringRequest);
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Calculate the new fuel amount after fueled in the shed
+     **********************************************************************************/
     public int updateFuelAmount(int originalAmount){
         return originalAmount - Integer.valueOf(txtView_fuelAmount.getText().toString());
     }
 
-    //TestUpdate code
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Update the queue details once entered and left (Exit/Fueled)
+     * @MethodType  :   API CallOut
+     **********************************************************************************/
     public void updateQueueDetails(String id, String vehicleCount){
         RequestQueue queue = Volley.newRequestQueue(this);
 

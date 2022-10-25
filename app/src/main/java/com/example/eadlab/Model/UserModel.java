@@ -19,12 +19,27 @@ public class UserModel {
     @SerializedName("fuelType")
     String fuelType;
 
-    public UserModel(String id, String name, String vehicleType, String vehicleNumber, String fuelType) {
+    @SerializedName("remainFuelQuota")
+    int remainFuelQuota;
+
+    public UserModel() {
+    }
+
+    public UserModel(String id, String name, String vehicleType, String vehicleNumber, String fuelType, int remainFuelQuota) {
         this.id = id;
         this.name = name;
         this.vehicleType = vehicleType;
         this.vehicleNumber = vehicleNumber;
         this.fuelType = fuelType;
+        this.remainFuelQuota = remainFuelQuota;
+    }
+
+    public int getRemainFuelQuota() {
+        return remainFuelQuota;
+    }
+
+    public void setRemainFuelQuota(int remainFuelQuota) {
+        this.remainFuelQuota = remainFuelQuota;
     }
 
     public String getId() {

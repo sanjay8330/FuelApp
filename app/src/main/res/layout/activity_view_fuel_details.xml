@@ -113,10 +113,10 @@
         android:textAllCaps="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
+        app:layout_constraintHorizontal_bias="0.208"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.23" />
+        app:layout_constraintVertical_bias="0.233" />
 
     <TextView
         android:id="@+id/label_fueldetail1"
@@ -165,7 +165,7 @@
         android:textAllCaps="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.226"
+        app:layout_constraintHorizontal_bias="0.187"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.272" />

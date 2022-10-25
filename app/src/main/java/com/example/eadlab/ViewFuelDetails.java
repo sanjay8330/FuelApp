@@ -1,3 +1,8 @@
+/*
+ * Developer     :   Sanjay Sakthivel (IT19158228)
+ * Purpose       :   Handle View Fuel Details page
+ * Created Date  :   18th October 2022
+ */
 package com.example.eadlab;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +14,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,10 +29,8 @@ import com.example.eadlab.Endpoints.EndpointURL;
 import com.example.eadlab.Model.FuelModel;
 import com.example.eadlab.Model.QueueModel;
 import com.example.eadlab.Model.ShedModel;
-import com.example.eadlab.Model.UserModel;
 import com.example.eadlab.Wrapper.SpinnerWrapper;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,6 +39,7 @@ import java.util.List;
 
 public class ViewFuelDetails extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
 
+    //List of variables to hold UI elements
     private TextView txtView_shedLocat, txtView_shedName, txtView_arrTime, txtView_arrAmount, txtView_remAmount, txtView_vehCount, txtView_noFuel;
     private Spinner spinner_fuelType;
     private ImageView imgView_fuelStatus, imgView_fuelQueue, imageView_noFuel;
@@ -44,14 +47,15 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
     private TextView label_arrTime, label_arrLitres, label_remLitres, label_vehCount;
 
     SpinnerWrapper selectedFuelType;
-    String shedName, enteredQueueId, vehicleType;
+    String shedName, enteredQueueId, vehicleType, userID;
+    boolean isFuelQuotaExceeded;
 
     //Endpoints
     String getShedByIdAPI = EndpointURL.GET_SHED_BY_ID;
     String getFuelAPI = EndpointURL.GET_FUEL_BY_SHEDNAME_FUELTYPE;
     String getQueueAPI = EndpointURL.GET_QUEUE_BY_SHEDNAME_FUELTYPE;
 
-    //Endpoint Variables
+    //Variables related to endpoints
     List<SpinnerWrapper> fuelTypes;
 
     @Override
@@ -59,7 +63,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_fuel_details);
 
-        //Get the ID of all elements
+        //Get the ID of UI Elements
         txtView_shedLocat = findViewById(R.id.txtview_shedLocat);
         txtView_shedName = findViewById(R.id.txtview_shedName);
 
@@ -77,7 +81,7 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         txtView_noFuel = findViewById(R.id.txtview_nofuel);
         imageView_noFuel = findViewById(R.id.imageView_nofuel);
 
-        //Hide no fuel tags
+        //Handle TextViews - Hide no fuel tags
         txtView_noFuel.setVisibility(TextView.INVISIBLE);
         imageView_noFuel.setVisibility(TextView.INVISIBLE);
 
@@ -90,48 +94,61 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
         this.hideUIElements();
 
-
         //Get the petrol shed details based on selected shed id
         Intent intent = getIntent();
         String shedID = intent.getStringExtra("shedID");
         vehicleType = intent.getStringExtra("vehicleType");
+        userID = intent.getStringExtra("userID");
+        isFuelQuotaExceeded = intent.getBooleanExtra("isQuoteExceeded", false);
         getShedsDetails(shedID);
 
         //Add standard values to fuel type spinner
         fuelTypes = new ArrayList<>();
         fuelTypes.add(new SpinnerWrapper("01", "Select a Fuel Type"));
-        fuelTypes.add(new SpinnerWrapper("petrol", "Petrol 92 - Normal"));//Change the date to make it petrol92 as ID
+        fuelTypes.add(new SpinnerWrapper("petrol92", "Petrol 92 - Normal"));
         fuelTypes.add(new SpinnerWrapper("petrol95", "Petrol 95 - Super"));
         fuelTypes.add(new SpinnerWrapper("diesel92", "Diesel 92 - Normal"));
         fuelTypes.add(new SpinnerWrapper("diesel95", "Diesel 95 - Super"));
         ArrayAdapter<SpinnerWrapper> spinnerArrayAdapter = new ArrayAdapter<SpinnerWrapper>(
                 ViewFuelDetails.this, android.R.layout.simple_spinner_dropdown_item, fuelTypes);
         spinner_fuelType.setAdapter(spinnerArrayAdapter);
-        //Get the fuel and queue details for selected fuel type
 
         spinner_fuelType.setOnItemSelectedListener(this);
 
         btnEnterQueue.setOnClickListener(this);
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Handle on onclick for buttons (Enter Queue)
+     **********************************************************************************/
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_enterQueue:
-                Toast.makeText(this, "Entered to Queue", Toast.LENGTH_LONG).show();
-                //Pass enteredQueueId to next activity, selectedFuelType.getName(), shedName
-                Intent intent = new Intent(ViewFuelDetails.this, QueueDetails.class);
-                intent.putExtra("queueID", enteredQueueId);
-                intent.putExtra("fuelType", selectedFuelType.getId());
-                intent.putExtra("shedName", shedName);
-                intent.putExtra("vehicleType", vehicleType);
-                startActivity(intent);
+                if(!isFuelQuotaExceeded){
+                    Toast.makeText(this, "Entered to Queue", Toast.LENGTH_LONG).show();
+
+                    Intent intent = new Intent(ViewFuelDetails.this, QueueDetails.class);
+                    intent.putExtra("queueID", enteredQueueId);
+                    intent.putExtra("fuelType", selectedFuelType.getId());
+                    intent.putExtra("shedName", shedName);
+                    intent.putExtra("vehicleType", vehicleType);
+                    intent.putExtra("userID", userID);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(this, "You have already consumed the fuel quota for the week!", Toast.LENGTH_LONG).show();
+                }
                 break;
             default:
                 break;
         }
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Handle on item selection for spinners (Fuel Type)
+     **********************************************************************************/
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         switch (adapterView.getId()){
@@ -154,6 +171,10 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Hide fuel details related UI components until fuel type selected
+     **********************************************************************************/
     public void hideUIElements(){
         txtView_arrTime.setVisibility(View.INVISIBLE);
         txtView_arrAmount.setVisibility(View.INVISIBLE);
@@ -172,6 +193,10 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         btnEnterQueue.setVisibility(View.INVISIBLE);
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Show fuel details related UI elements once fuel type selected
+     **********************************************************************************/
     public void showUIElements(){
         txtView_arrTime.setVisibility(View.VISIBLE);
         txtView_arrAmount.setVisibility(View.VISIBLE);
@@ -192,6 +217,11 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
     private static final String TAG = "VIEW_FUEL_DETAILS_PAGE_LOG";
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Get the fuel station details based on ID
+     * @MethodType  :   API CallOut
+     **********************************************************************************/
     public void getShedsDetails(String id){
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -232,6 +262,11 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         queue.add(stringRequest);
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Get the fuel and queue details for selected fuel station
+     * @MethodType  :   API CallOut
+     **********************************************************************************/
     public void getFuelAndQueueDetails(String fuelType, String shedName){
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -264,8 +299,8 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
 
                                 showUIElements();
 
-                                getQueueDetails("petrol", "abc");
-                                //getQueueDetails(fuelType.trim(), shedName.trim());
+                                //getQueueDetails("petrol", "abc");
+                                getQueueDetails(selectedFuelType.getId(), fuelModel.getShedName());
 
                             }else{
                                 hideUIElements();
@@ -295,6 +330,11 @@ public class ViewFuelDetails extends AppCompatActivity implements AdapterView.On
         queue.add(stringRequest);
     }
 
+    /**********************************************************************************
+     * @Developer   :   Sanjay Sakthivel (IT19158228)
+     * @Purpose     :   Get the queue details based on shed and fuel type
+     * @MethodType  :   API CallOut
+     **********************************************************************************/
     public void getQueueDetails(String fuelType, String shedName){
         RequestQueue queue = Volley.newRequestQueue(this);
 
