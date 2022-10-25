@@ -37,6 +37,17 @@
     <string name="label_time">00:00:00 A.M</string>
     <string name="btn_label_exit">Exit Queue</string>
     <string name="btn_fueled">Fueled Vehicle</string>
+    <string name="shed_notavailable">No Registered Shed available in selected location</string>
+    <string name="no_fuel">Fuel is currently not available.</string>
+    <string name="fuel_amount">Amount of Fuel to pump</string>
+    <string name="fueled_details">Fueled Details</string>
+    <string name="shed_name">Fuel Station Name</string>
+    <string name="fuel_type">Fuel Type</string>
+    <string name="fueled_amount">Amount of Fuel Pumped</string>
+    <string name="total_cost">Total Cost</string>
+    <string name="rupees">Rs.</string>
+    <string name="return_home">Return to Homepage</string>
+    <string name="logout">Logout</string>
     <string-array name="location_array">
         <item>Select a location</item>
         <item>Location 1</item>
