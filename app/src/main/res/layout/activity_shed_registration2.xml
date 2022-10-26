@@ -6,18 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".shed_registration">
 
+    <TextView
+        android:id="@+id/label_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/string_shedReg"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.557"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.111" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="-343dp">
 
+        <TextView
+            android:id="@+id/txt_apptitle10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.508"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.022" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/nxtBtn"
             android:layout_width="166dp"
             android:layout_height="49dp"
             android:background="#E91E63"
-            android:text="@string/string_next"
+            android:text="@string/string_reg"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -26,19 +53,7 @@
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.957" />
-
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="224dp"
-            android:layout_height="65dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.12"
-            app:srcCompat="@drawable/fuelstat" />
+            app:layout_constraintVertical_bias="0.976" />
 
         <TextView
             android:id="@+id/txt_subtitle4"
@@ -64,7 +79,7 @@
             app:layout_constraintHorizontal_bias="0.536"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.486" />
+            app:layout_constraintVertical_bias="0.537" />
 
         <TextView
             android:id="@+id/txt_maintitle8"
@@ -82,7 +97,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.551" />
+            app:layout_constraintVertical_bias="0.589" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/locationInput"
@@ -94,7 +109,7 @@
             app:layout_constraintHorizontal_bias="0.46"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.614" />
+            app:layout_constraintVertical_bias="0.643" />
 
         <TextView
             android:id="@+id/txt_maintitle10"
@@ -110,7 +125,7 @@
             app:layout_constraintHorizontal_bias="0.188"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.678" />
+            app:layout_constraintVertical_bias="0.702" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/shedPasswordInput"
@@ -124,7 +139,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.742" />
+            app:layout_constraintVertical_bias="0.771" />
 
         <TextView
             android:id="@+id/txt_maintitle11"
@@ -142,7 +157,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.792" />
+            app:layout_constraintVertical_bias="0.819" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/shedPasswordConfirmInput"
@@ -156,7 +171,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.866" />
+            app:layout_constraintVertical_bias="0.885" />
 
         <TextView
             android:id="@+id/txt_maintitle4"
@@ -192,19 +207,20 @@
             app:layout_constraintHorizontal_bias="0.2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.433" />
+            app:layout_constraintVertical_bias="0.483" />
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/shedContactInput"
+            android:id="@+id/loginPasswordInput"
             android:layout_width="295dp"
             android:layout_height="46dp"
             android:hint="Enter Mobile Number"
+            android:inputType="number"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.568"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.381" />
+            app:layout_constraintVertical_bias="0.416" />
 
         <TextView
             android:id="@+id/txt_maintitle6"
@@ -217,10 +233,10 @@
             android:typeface="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.22"
+            app:layout_constraintHorizontal_bias="0.214"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.324" />
+            app:layout_constraintVertical_bias="0.361" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/shedUsernameInput"
@@ -232,7 +248,15 @@
             app:layout_constraintHorizontal_bias="0.511"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.26" />
+            app:layout_constraintVertical_bias="0.312" />
+
+        <ImageView
+            android:id="@+id/imageView_fuelQueue3"
+            android:layout_width="220dp"
+            android:layout_height="85dp"
+            app:srcCompat="@drawable/fuelqueue2"
+            tools:layout_editor_absoluteX="155dp"
+            tools:layout_editor_absoluteY="116dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

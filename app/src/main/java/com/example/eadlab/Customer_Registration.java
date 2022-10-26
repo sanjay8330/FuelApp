@@ -42,7 +42,7 @@ public class Customer_Registration extends AppCompatActivity implements AdapterV
         usernameTxt = findViewById(R.id.shedUsernameInput);
         passwordTxt = findViewById(R.id.shedPasswordInput);
         vehicleNumTxt = findViewById(R.id.locationInput);
-        contactTxt = findViewById(R.id.shedContactInput);
+        contactTxt = findViewById(R.id.loginPasswordInput);
         confirmPasswordTxt = findViewById(R.id.shedPasswordConfirmInput);
 
         vehicleType = findViewById(R.id.vehicleTypeInput);
@@ -161,8 +161,8 @@ public class Customer_Registration extends AppCompatActivity implements AdapterV
 
                 String body="{\"username\":" + "\"" + usernameTxt.getText().toString() + "\"," +
                         "\"password\":" + "\"" + passwordTxt.getText().toString() + "\"," +
-                        "\"contact\":" + "\"" + contactTxt.getText().toString() + "\"," +
-                        "\"role\":" + "\"" + "customer" + "\"" +"}";
+                        "\"mobile\":" + "\"" + contactTxt.getText().toString() + "\"," +
+                        "\"userrole\":" + "\"" + "customer" + "\"" +"}";
                 Log.e(TAG, "getBody: "+body);
 
                 return body.getBytes();

@@ -29,6 +29,8 @@ public class shed_registration extends AppCompatActivity implements View.OnClick
     String addUserAPI = EndpointURL.ADD_USER;
     String addShedAPI = EndpointURL.ADD_SHED;
 
+    String userRole = "shedowner";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,10 +40,12 @@ public class shed_registration extends AppCompatActivity implements View.OnClick
         passwordTxt = findViewById(R.id.shedPasswordInput);
         shedNameTxt = findViewById(R.id.shedNameInput);
         confirmPasswordTxt = findViewById(R.id.shedPasswordConfirmInput);
-        contactTxt = findViewById(R.id.shedContactInput);
+        contactTxt = findViewById(R.id.loginPasswordInput);
         locationTxt = findViewById(R.id.locationInput);
 
         nextBtn = findViewById(R.id.nxtBtn);
+
+        nextBtn.setOnClickListener(this);
     }
 
     private static final String TAG = "SHED_REGISTRATION_LOG";
@@ -62,7 +66,7 @@ public class shed_registration extends AppCompatActivity implements View.OnClick
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "Cannot update user fuel quota details: "+error.getLocalizedMessage());
+                Log.e(TAG, "Cannot insert user details: "+error.getLocalizedMessage());
             }
         }) {
 
@@ -103,7 +107,7 @@ public class shed_registration extends AppCompatActivity implements View.OnClick
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "Cannot update user fuel quota details: "+error.getLocalizedMessage());
+                Log.e(TAG, "Cannot insert shed details: "+error.getLocalizedMessage());
             }
         }) {
 
@@ -112,8 +116,8 @@ public class shed_registration extends AppCompatActivity implements View.OnClick
 
                 String body="{\"username\":" + "\"" + usernameTxt.getText().toString() + "\"," +
                         "\"password\":" + "\"" + passwordTxt.getText().toString() + "\"," +
-                        "\"contact\":" + "\"" + contactTxt.getText().toString() + "\"," +
-                        "\"role\":" + "\"" + "shedowner" + "\"" +"}";
+                        "\"mobile\":" + "\"" + contactTxt.getText().toString() + "\"," +
+                        "\"userrole\":" + "\"" + userRole + "\"" +"}";
                 Log.e(TAG, "getBody: "+body);
 
                 return body.getBytes();
@@ -139,7 +143,7 @@ public class shed_registration extends AppCompatActivity implements View.OnClick
                 if(!passwordTxt.getText().toString().equals(confirmPasswordTxt.getText().toString())){
                     Toast.makeText(shed_registration.this, "Passwords are mismatched", Toast.LENGTH_LONG).show();
                 } else {
-                    if(!usernameTxt.getText().toString().isEmpty() && !contactTxt.getText().toString().isEmpty() && !passwordTxt.getText().toString().isEmpty()
+                    if(!usernameTxt.getText().toString().isEmpty() && !passwordTxt.getText().toString().isEmpty()
                             && !locationTxt.getText().toString().isEmpty() && !shedNameTxt.getText().toString().isEmpty()){
                         addShed();
                     }
