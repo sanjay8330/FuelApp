@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnTest;
     private Button btntest2;
 
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -35,11 +36,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         btnTest = findViewById(R.id.btn_test);
+        btntest2 = findViewById(R.id.btn_test3);
 
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, CustomerHomepage.class);
+                startActivity(intent);
+            }
+        });
+
+        btntest2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, shed_registration.class);
                 startActivity(intent);
             }
         });

@@ -89,7 +89,7 @@
             app:layout_constraintVertical_bias="0.377" />
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editText"
+            android:id="@+id/shedContactInput"
             android:layout_width="277dp"
             android:layout_height="34dp"
             android:hint="Enter Password"

@@ -16,6 +16,15 @@
         android:theme="@style/Theme.EADLab"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Shed_fuel_registration"
+            android:exported="false" />
+        <activity
+            android:name=".shed_registration"
+            android:exported="false" />
+        <activity
+            android:name=".Customer_Registration"
+            android:exported="false" />
+        <activity
             android:name=".fueledpage"
             android:exported="true" />
         <activity

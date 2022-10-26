@@ -82,8 +82,8 @@
     <string name="string_fuelTyle">Fuel Type</string>
     <string name="string_shedName">Shed name</string>
     <string name="string_shedNum">Petrol - 92 (Normal)</string>
-    <string name="string_fuel1">Petrol - 95 (Super)</string>
-    <string name="string_fuel2">Diesel - 92 (Normal)</string>
+    <string name="string_fuel1">Petrol - 92 (Normal)</string>
+    <string name="string_fuel2">Petrol - 95 (Super)</string>
     <string name="string_fuel3">Diesel - 92 (Normal)</string>
     <string name="string_fuel4">Diesel - 95 (Super)</string>
     <string name="litres">Litres Available</string>
