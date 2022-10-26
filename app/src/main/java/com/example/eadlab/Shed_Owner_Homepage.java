@@ -82,8 +82,10 @@ public class Shed_Owner_Homepage extends AppCompatActivity implements AdapterVie
                 Shed_Owner_Homepage.this, android.R.layout.simple_spinner_dropdown_item, fuelTypes);
         fuel_type_spinner.setAdapter(spinnerArrayAdapter);
 
-        user_id = "634ebb895e2da36177ba8644";
+        //user_id = "634ebb895e2da36177ba8644";
         shed_id = "634ebbe45e2da36177ba8646";
+        Intent intent = getIntent();
+        user_id = intent.getStringExtra("userid");
 
         getsShed_Owner_Details(user_id);
 
