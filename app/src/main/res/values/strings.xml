@@ -70,4 +70,40 @@
         <item>Diesel - 92 (Normal)</item>
         <item>Diesel - 95 (Super)</item>
     </string-array>
+
+    //login and registration Strings
+    <string name="string_login">Log in</string>
+    <string name="string_next">Next</string>
+    <string name="string_username">Username</string>
+    <string name="string_password">Password</string>
+    <string name="string_conPassword">Confirm Password</string>
+    <string name="string_reg">Register</string>
+    <string name="string_cusReg">Customer Registration</string>
+    <string name="string_shedReg">Shed Registration</string>
+    <string name="string_mobileNo">Mobile Number</string>
+    <string name="string_vehicleNum">Vehicle Number</string>
+    <string name="string_fuelTyle">Fuel Type</string>
+    <string name="string_shedName">Shed name</string>
+    <string name="string_shedNum">Petrol - 92 (Normal)</string>
+    <string name="string_fuel1">Petrol - 92 (Normal)</string>
+    <string name="string_fuel2">Petrol - 95 (Super)</string>
+    <string name="string_fuel3">Diesel - 92 (Normal)</string>
+    <string name="string_fuel4">Diesel - 95 (Super)</string>
+    <string name="litres">Litres Available</string>
+    <string name="obtained">Fuel Obtained</string>
+
+    <string-array name="vehicleType_array">
+        <item>Select a Vehicle Type</item>
+        <item>Bike</item>
+        <item>Threewheel</item>
+        <item>Car</item>
+        <item>Van</item>
+    </string-array>
+
+    <string-array name="obtained_array">
+        <item>Select one</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+    </string-array>
 </resources>

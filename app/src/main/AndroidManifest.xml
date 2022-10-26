@@ -16,13 +16,13 @@
         android:theme="@style/Theme.EADLab"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".Fuel_details_Update"
+            android:name=".Shed_fuel_registration"
             android:exported="false" />
         <activity
-            android:name=".Shed_Owner_Homepage"
+            android:name=".shed_registration"
             android:exported="false" />
         <activity
-            android:name=".Registration_Petrol_Shed_Owner"
+            android:name=".Customer_Registration"
             android:exported="false" />
         <activity
             android:name=".fueledpage"
