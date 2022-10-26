@@ -48,6 +48,9 @@
     <string name="rupees">Rs.</string>
     <string name="return_home">Return to Homepage</string>
     <string name="logout">Logout</string>
+    <string name="label_locate">Location</string>
+    <string name="veh_count">Vehicle Count</string>
+    <string name="Add_btn">Add Fuel Details</string>
     <string-array name="location_array">
         <item>Select a location</item>
         <item>Location 1</item>

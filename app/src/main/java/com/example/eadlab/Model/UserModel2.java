@@ -13,10 +13,10 @@ public class UserModel2 {
     @SerializedName("password")
     String password;
 
-    @SerializedName("contact")
+    @SerializedName("mobile")
     String contact;
 
-    @SerializedName("role")
+    @SerializedName("userrole")
     String role;
 
     public UserModel2() {

@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Button btnTest;
     private Button btntest2;
+    private Button btntest3;
 
 
     @Override
@@ -36,7 +37,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         btnTest = findViewById(R.id.btn_test);
-        btntest2 = findViewById(R.id.btn_test3);
+        btntest2 = findViewById(R.id.btn_test2);
+        btntest3 = findViewById(R.id.btn_test3);
 
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,7 +51,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btntest2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, login.class);
+                Intent intent = new Intent(MainActivity.this, Shed_Owner_Homepage.class);
+                startActivity(intent);
+            }
+        });
+
+        btntest3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, shed_registration.class);
                 startActivity(intent);
             }
         });
