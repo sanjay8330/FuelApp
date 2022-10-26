@@ -7,7 +7,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetroFitClient {
     private static Retrofit instance;
-    private static final String BASE_URL = "http://10.0.2.2:7135";
+    private static final String BASE_URL = "https://10.0.2.2:7135";
 
     public static Retrofit getInstance(){
         if(instance == null)
