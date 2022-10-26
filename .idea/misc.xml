@@ -3,29 +3,24 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_customer_homepage.xml" value="0.33" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_fuel_details_update.xml" value="0.36666666666666664" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_fueledpage.xml" value="0.36666666666666664" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_main.xml" value="0.2759259259259259" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_queue_details.xml" value="0.36666666666666664" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_registration_petrol_shed_owner.xml" value="0.36666666666666664" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_shed_fuel_registration2.xml" value="0.36666666666666664" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_shed_owner_homepage.xml" value="0.33" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_shed_registration2.xml" value="0.36666666666666664" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/activity_view_fuel_details.xml" value="0.36102564102564105" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/homepage_shed_owner.xml" value="0.36666666666666664" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/registration_petrol_shed_owner.xml" value="0.36102564102564105" />
-        <entry key="..\:/4th Year/Second Semesnter/Modules/Enterprise Application Development - SE4040/Project/Frontend/FuelApp/app/src/main/res/layout/update_fuel_details.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/Sanjay/AppData/Local/Android/Sdk/platforms/android-31/data/res/layout/simple_spinner_item.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/drawable/blue_outline.xml" value="0.2703125" />
-        <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/drawable/button_exit_style.xml" value="0.2703125" />
-        <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/drawable/button_style.xml" value="0.2703125" />
-        <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/drawable/homepage_view.xml" value="0.2703125" />
-        <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2703125" />
-        <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/drawable/view_outline.xml" value="0.2703125" />
-        <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/drawable/view_outline2.xml" value="0.2703125" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/drawable/x.xml" value="0.1585" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_customer_homepage.xml" value="0.1802536231884058" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_customer_registration.xml" value="0.22" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_customer_registration2.xml" value="0.18697916666666667" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_fueledpage.xml" value="0.20416666666666666" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_login.xml" value="0.22" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_login2.xml" value="0.20416666666666666" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_queue_details.xml" value="0.22" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_register.xml" value="0.22" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_register2.xml" value="0.20416666666666666" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_shed_fuel_registration.xml" value="0.22" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_shed_fuel_registration2.xml" value="0.22" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_shed_registration.xml" value="0.20416666666666666" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_shed_registration2.xml" value="0.20416666666666666" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/activity_view_fuel_details.xml" value="0.1802536231884058" />
+        <entry key="..\:/SLIIT/Y4S2/EAD/Assignment/frontend/FuelApp/app/src/main/res/layout/registration_petrol_shed_owner.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/layout/activity_customer_homepage.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/layout/activity_fueledpage.xml" value="0.264" />
         <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/layout/activity_queue_details.xml" value="0.264" />
         <entry key="..\:/Users/Sanjay/StudioProjects/EADLab/app/src/main/res/layout/activity_view_fuel_details.xml" value="0.25416666666666665" />
