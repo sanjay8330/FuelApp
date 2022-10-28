@@ -121,6 +121,9 @@ public class QueueDetails extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_exit:
                 updateQueueDetails(queueID, String.valueOf(currVehicleCount - 1));
                 Toast.makeText(this, "Exited from the Queue", Toast.LENGTH_LONG).show();
+                Intent activityIntent = new Intent(QueueDetails.this, CustomerHomepage.class);
+                activityIntent.putExtra("userid", userID);
+                startActivity(activityIntent);
                 break;
             case R.id.btn_fueled:
                 if(Integer.valueOf(txtView_fuelAmount.getText().toString()) > 0){

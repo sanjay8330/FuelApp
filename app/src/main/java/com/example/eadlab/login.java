@@ -93,9 +93,10 @@ public class login extends AppCompatActivity implements View.OnClickListener {
                                 //getCustDetails(userModel2.getUsername());
 
                                 if(userModel2.getRole().equals("customer")){
-                                    Intent intent = new Intent(login.this, CustomerHomepage.class);
-                                    intent.putExtra("userid", customerID);
-                                    startActivity(intent);
+                                    getCustDetails(userModel2.getUsername());
+//                                    Intent intent = new Intent(login.this, CustomerHomepage.class);
+//                                    intent.putExtra("userid", customerID);
+//                                    startActivity(intent);
 
                                 }else if (userModel2.getRole().equals("shedowner")){
                                     Intent intent = new Intent(login.this, Shed_Owner_Homepage.class);
@@ -149,6 +150,9 @@ public class login extends AppCompatActivity implements View.OnClickListener {
                                         jsonObject.getInt("remainFuelQuota")
                                 );
                                 customerID = userModel.getId();
+                                Intent intent = new Intent(login.this, CustomerHomepage.class);
+                                intent.putExtra("userid", customerID);
+                                startActivity(intent);
 
                             }else{
                                 Log.e(TAG, "onErrorResponse: ");

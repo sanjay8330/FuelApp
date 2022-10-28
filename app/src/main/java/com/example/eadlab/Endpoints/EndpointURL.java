@@ -1,8 +1,8 @@
 package com.example.eadlab.Endpoints;
 
 public class EndpointURL {
-    //public static final String endpointAddress = "192.168.1.30:5000";//Change the IP address here (Network and settings -> Wifi properties -> Find the IPv4)
-    public static final String endpointAddress = "192.168.8.104:5000";//Change the IP address here (Network and settings -> Wifi properties -> Find the IPv4)
+    public static final String endpointAddress = "192.168.1.30:5000";//Change the IP address here (Network and settings -> Wifi properties -> Find the IPv4)
+    //public static final String endpointAddress = "192.168.8.104:5000";//Change the IP address here (Network and settings -> Wifi properties -> Find the IPv4)
     //public static final String endpointAddress = "192.168.1.100:5000";//Change the IP address here (Network and settings -> Wifi properties -> Find the IPv4)
 
 

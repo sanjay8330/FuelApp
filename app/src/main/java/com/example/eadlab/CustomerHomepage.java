@@ -104,9 +104,9 @@ public class CustomerHomepage extends AppCompatActivity implements AdapterView.O
         sheds = new ArrayList<>();
 
         //Get the vehicle details based on logged in user id
-        userId = "634eba7a5e2da36177ba8640";
-        //Intent intent = getIntent();
-        //userId = intent.getStringExtra("userid");
+        //userId = "634eba7a5e2da36177ba8640";
+        Intent intent = getIntent();
+        userId = intent.getStringExtra("userid");
         getLoggedInUserDetails(userId);
 
         //Get the list of locations
